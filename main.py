@@ -3,29 +3,32 @@ from collections import Counter
 
 def main():
     manual_params = ['R0',
-              'transmission_rate',
-              'testing_rate',
-              'mortality_rate',
-              'case_fatality_ratio',
-              'asymptomatic_rate',
-              'undocumented_cases',
-              'sample_size']
+                     'transmission_rate',
+                     'testing_rate',
+                     'mortality_rate',
+                     'case_fatality_ratio',
+                     'asymptomatic_rate',
+                     'undocumented_cases',
+                     'sample_size',
+                     'methodology',
+                     'location_of_interest']
 
-    auto_params = ['DOI',
-                   'date',
-                   'published_in',
-                   'published_by',
-                   'study_location_scope',
-                   'methodology']
+    auto_params = ['title',
+                   'abstract',
+                   'DOI',
+                   'release_date',
+                   'publisher',
+                   'authored_by']
 
-    keywords = ['transmission',
-                'rate',
-                'spread',
-                'infection',
-                'exposed',
-                'mortality']
+    good_keywords = ['transmission',
+                     'rate',
+                     'spread',
+                     'infection',
+                     'exposed',
+                     'mortality']
 
-    bad_keywords = ['gene',
+    bad_keywords = ['Cardio',
+                    'gene',
                     'ACE2',
                     'chloroquine',
                     'remdesivir',
@@ -120,19 +123,23 @@ def main():
                     'Commentary',
                     'Guide',
                     'healthcare',
-                    'Non-Pharmaceutical']
+                    # 'Non-Pharmaceutical',
+                    'neuro',
+                    'brain',
+                    'viral',
+                    'psych',
+                    'governor',
+                    'severe',
+                    'Return']
+
 
     # TODO::implement some sort of smart database
-    titles = Article_Sweep.Article_Sweep(keywords, bad_keywords, auto_params, manual_params).words
-    words = Counter(titles.split()).most_common()
-    # problems = []
-    # for word in words:
-    #     if word[1] > 2:
-    #         problems.append(word)
+    titles = Article_Sweep.Article_Sweep(good_keywords, bad_keywords, auto_params, manual_params)
+    
+    
+    # words = Counter(titles.words.split()).most_common()
+    # problems = [word for word in words if '�' not in word[0] if word[1] > 2]
     # print(problems)
-    print('-------------------------------------------------------------------------------------------------------------------------\n')
-    problems = [word for word in words if '�' not in word[0] if word[1] > 2]
-    print(problems)
 
 if __name__ == "__main__":
     main()
