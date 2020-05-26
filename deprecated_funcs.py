@@ -38,3 +38,24 @@
                         curr_match['Publisher'] = row['Journal/Publisher']
                     except:
                         continue
+
+
+
+
+
+# date formatting to get the right  CDC URL ( not used right now)
+today = date.today()
+d2 = today.strftime("%B %d %Y").split()
+if d2[1][0] == '0':
+    day = d2[1][1:]
+else:
+    day = d2[1]
+self.DATE = day + d2[0] + d2[2]
+yesterday = date.today() - datetime.timedelta(days=1)
+d2 = yesterday.strftime("%B %d %Y").split()
+if d2[1][0] == '0':
+    day = d2[1][1:]
+self.DATE_YESTERDAY = day + d2[0] + d2[2]
+self.CDC_LINK = 'https://www.cdc.gov/library/researchguides/2019novelcoronavirus/researcharticles.html'
+self.params = manual_params
+self.CDC_PAPERS = 'https://www.cdc.gov'
