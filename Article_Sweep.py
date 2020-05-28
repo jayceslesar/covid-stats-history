@@ -12,6 +12,7 @@ import lxml.html
 import pandas as pd
 
 
+
 # keeps track of articles flagged as not useful (may not use yet)
 def flag_clean(df):
         new_bad_DOI = []
@@ -78,7 +79,7 @@ class Article_Sweep:
         self.new_bad_DOI = newrxiv[1]  # this is the new flagged DOI's as bad
         all_bad_DOI = self.new_bad_DOI + self.bad_DOI["DOI"].to_list()  # all the bad DOI's in history
         all_bad_DOI = list(set(all_bad_DOI))  # remove dupes
-        self.bad_DOI["DOI"] = all_bad_DOI  # store
+        self.bad_DOI["DOI"] = pd.Series(all_bad_DOI)
         self.bad_DOI = pd_clean(self.bad_DOI)  # clean
         self.bad_DOI.to_csv("bad_DOI.csv")  # save
         self.JSON_PAPERS = 'https://connect.medrxiv.org/relate/collection_json.php?grp=181'
