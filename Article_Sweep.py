@@ -21,7 +21,7 @@ def flag_clean(df):
             if not pd.isna(row["flag"]):
                 rows_to_drop.append(index)
                 new_bad_DOI.append(row["DOI"])
-        return [df.drop(df.index[rows_to_drop]), new_bad_DOI]
+        return (df.drop(df.index[rows_to_drop]), new_bad_DOI)
 
 
 # cleans some pandas stuff that happens because I dont use a real index
