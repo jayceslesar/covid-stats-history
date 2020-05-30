@@ -37,7 +37,7 @@ def get_text(DOI:str) -> str:
     full_text = []  # store text
     for para in doc.paragraphs:
         fullText.append(para.text.encode(sys.stdout.encoding, errors='replace'))  # fix encodings and append
-    return b'\n'.join(full_text).decode('windows-1252')  # one final decode
+    return b'\n'.join(full_text).decode('windows-1252')  # one final decode -> will look different on linux
 
 
 # DOI = "10.1101/2020.04.08.20058487"
