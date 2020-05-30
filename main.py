@@ -2,14 +2,15 @@ import Article_Sweep
 from collections import Counter
 
 def main():
-    manual_params = ['R0',
+    # weight each param -> word2vec
+    manual_params = ['R0',  # high weight
                      'transmission_rate',
                      'testing_rate',
                      'mortality_rate',
                      'case_fatality_ratio',
                      'asymptomatic_rate',
                      'undocumented_cases',
-                     'sample_size',
+                     'sample_size',  # high weight
                      'methodology',
                      'location_of_interest']
 
