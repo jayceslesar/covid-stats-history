@@ -17,7 +17,7 @@ def get_text(DOI:str) -> str:
     fp.write_bytes(response.content)  # save .pdf
     
     word = win32com.client.Dispatch("Word.Application")
-    word.visible = 0
+    word.visible = 0  # supress errors in console (probably get a lot of errors from images we don't care about)
     pdfs_path = "" # folder where the .pdf files are stored
     for i, doc in enumerate(glob.iglob(pdfs_path + "*.pdf")):
         print(doc)
