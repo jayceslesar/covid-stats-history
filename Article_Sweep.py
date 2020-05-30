@@ -92,6 +92,7 @@ class Article_Sweep:
         # parses the rxiv pre-release database
         def get_rxiv(self):
             to_add = []
+            database_names = None
             try:
                 database_names = self.rxiv["title"].to_list()
             # first run of database, no records collected yet
@@ -112,7 +113,7 @@ class Article_Sweep:
                     # run the relevant function (function returns True or False)
                     if find_relevant_titles(curr_title, self.GOOD_KEYWORDS, self.BAD_KEYWORDS):
                         try:
-                            self.words += curr_title + ' '  # used to track most common words across titles)
+                            self.words += curr_title + ' '  # used to track most common words across titles
                             print(paper_data)  # print it to make sure it is UTF-8 (romance language)
                             # pull the auto stats
                             curr_match["title"] = curr_title
