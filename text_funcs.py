@@ -7,7 +7,7 @@ import win32com.client
 import os
 
 
-# !! ONLY WORKS IF WORD IS INSTALLED ON MACHINE -> could run tets with LibreOffice but will need time to play around
+# !! ONLY WORKS IF WORD IS INSTALLED ON MACHINE -> could run tests with LibreOffice but will need time to play around
 # gets the .pdf from DOI, save convert to .docx and return text
 def get_text(DOI:str) -> str:
     name = "curr."
