@@ -66,7 +66,7 @@ def find_relevant_titles(title:str, good_keywords:list, bad_keywords:list) -> bo
 # class to organize data and run everything
 class Article_Sweep:
     # initializer
-    def __init__(self, good_keywords:list, bad_keywords:list, auto_params:list, manual_params:list):
+    def __init__(self, good_keywords:list, bad_keywords:list, auto_params:list, manual_params:list) -> None:
         # list of names of databses I currently pull from (just preprints right now)
         self.DATABASES = ["rxiv"]
         # pathing to work on any machine
