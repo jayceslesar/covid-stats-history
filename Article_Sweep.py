@@ -54,12 +54,12 @@ def find_relevant_titles(title:str, good_keywords:list, bad_keywords:list) -> bo
     good_keywords = lowerize(good_keywords)
     bad_keywords = lowerize(bad_keywords)
     title_split = lowerize(title_split)
-    for w in good_keywords:
-        if w in title or w in title_split:
-            return True
     for w in bad_keywords:
         if w in title or w in title_split:
             return False
+    for w in good_keywords:
+        if w in title or w in title_split:
+            return True
     return True
 
 
