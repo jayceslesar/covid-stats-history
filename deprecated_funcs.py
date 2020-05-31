@@ -59,3 +59,29 @@ self.DATE_YESTERDAY = day + d2[0] + d2[2]
 self.CDC_LINK = 'https://www.cdc.gov/library/researchguides/2019novelcoronavirus/researcharticles.html'
 self.params = manual_params
 self.CDC_PAPERS = 'https://www.cdc.gov'
+
+
+
+
+
+# code chunk for text_funcs.py that used word as a medium
+if sys.platform.startswith('linux'):
+        pass
+    
+    else:
+        word = win32com.client.Dispatch("Word.Application")
+        word.visible = 0  # supress errors in console (probably get a lot of errors from images we don't care about)
+        pdfs_path = "pdfs/" # folder where the .pdf files are stored
+        for i, doc in enumerate(glob.iglob(pdfs_path + "*.pdf")):
+            filename = doc.split('\\')[-1]
+            in_file = os.path.abspath(doc)
+            wb = word.Documents.Open(in_file)
+            out_file = os.path.abspath(Path(Path.cwd() / "pdfs" / "curr.docx"))
+            wb.SaveAs2(out_file, FileFormat=16) # file format for docx
+            wb.Close()
+        word.Quit()
+        doc = docx.Document(Path(Path.cwd() / "pdfs" / "curr.docx"))  # build path
+        full_text = []  # store text
+        for para in doc.paragraphs:
+            full_text.append(para.text.encode(sys.stdout.encoding, errors='replace'))  # fix encodings and append
+        return b'\n'.join(full_text).decode('windows-1252')  # one final decode -> will look different on linux
