@@ -1,13 +1,12 @@
 import requests
 from pathlib import Path
-import docx
 import sys
 import glob
 import win32com.client
 import os
 import pdfreader
 from pdfreader import PDFDocument, SimplePDFViewer
-from threading import Timer
+from threading import Timer  # will use to determine if the thing is stuck on images or not hopefully
 
 
 def get_text(DOI:str) -> str:
