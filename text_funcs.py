@@ -23,12 +23,9 @@ def get_text(DOI:str) -> str:
         print(doc)
         filename = doc.split('\\')[-1]
         in_file = os.path.abspath(doc)
-        print(in_file)
         wb = word.Documents.Open(in_file)
         out_file = os.path.abspath(Path(Path.cwd() / "pdfs" / "curr.docx"))
-        print("outfile\n",out_file)
         wb.SaveAs2(out_file, FileFormat=16) # file format for docx
-        print("success...")
         wb.Close()
     word.Quit()
 
@@ -36,7 +33,7 @@ def get_text(DOI:str) -> str:
     doc = docx.Document(Path(Path.cwd() / "pdfs" / "curr.docx"))  # build path
     full_text = []  # store text
     for para in doc.paragraphs:
-        fullText.append(para.text.encode(sys.stdout.encoding, errors='replace'))  # fix encodings and append
+        full_text.append(para.text.encode(sys.stdout.encoding, errors='replace'))  # fix encodings and append
     return b'\n'.join(full_text).decode('windows-1252')  # one final decode -> will look different on linux
 
 
