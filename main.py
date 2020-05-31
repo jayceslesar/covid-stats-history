@@ -131,7 +131,8 @@ def main():
                     'psych',
                     'governor',
                     'severe',
-                    'Return']
+                    'Return',
+                    'Cancer']
 
 
     # TODO::implement some sort of smart database
