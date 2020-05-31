@@ -7,12 +7,21 @@ first = "R0="
 second = "R0 ="
 df = pd.read_csv("rxiv.csv")
 for index, row in df.iterrows():
-    text = text_funcs.get_text(row["DOI"])
-    if first in text:
-        i = text.index(first)
-        print("R0", text[i:i + len(first) + 3])
-    if second in text:
-        i = text.index(second)
-        print("R0", text[i:i + len(first) + 3])
-    else:
-        print("Not found")
+    try:
+        print(row["title"])
+        text = text_funcs.get_text(row["DOI"])
+        print("R0" in text)
+        if first in text:
+            print("R0 found...")
+            i = text.index(first)
+            print("R0", text[i:i + len(first) + 3])
+        if second in text:
+            print("R0 found...")
+            i = text.index(second)
+            print("R0", text[i:i + len(second) + 3])
+        else:
+            print("Not found")
+    except Exception as e:
+        print(e)
+        pass
+    print("------------------------------------------------------------------------------------------------------------------")
