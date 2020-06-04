@@ -6,7 +6,7 @@ from datetime import datetime
 import pathlib
 from pathlib import Path
 
-
+print("Directory Path:", Path().absolute())  
 def main():
 
     new = []
