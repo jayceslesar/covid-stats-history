@@ -14,7 +14,7 @@ def get_text(DOI:str) -> str:
     response = requests.get(url)
     fp.write_bytes(response.content)  # save .pdf  # BUG::writes encoded characters as bytes and reads them incorrectly !?!?!?
     
-    raw = parser.from_file(Path(path / "pdfs" / "curr.pdf"))
+    raw = parser.from_file(str(path) + "/pdfs/curr.pdf")
     txt = raw['content'].encode().decode('unicode_escape')
 
     return txt
