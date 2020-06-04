@@ -3,14 +3,14 @@ from collections import Counter
 
 def main():
     # weight each param -> word2vec
-    manual_params = ['R0',  # high weight
+    manual_params = ['R0',                   # !!!
                      'transmission_rate',
                      'testing_rate',
                      'mortality_rate',
-                     'case_fatality_ratio',
-                     'asymptomatic_rate',
+                     'case_fatality_ratio',  # !
+                     'asymptomatic_rate',    # !!
                      'undocumented_cases',
-                     'sample_size',  # high weight
+                     'sample_size',
                      'methodology',
                      'location_of_interest']
 
