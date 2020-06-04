@@ -78,7 +78,7 @@ for index, row in df.iterrows():
     print("------------------------------------------------------------------------------------------------")
 
 
-new = pd.DataFrame(d)
+new = pd.DataFrame(new)
 new.to_csv("R0test.csv")
-print(d)
+print(new)
 df.to_csv("R0.csv")
