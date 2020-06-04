@@ -6,7 +6,7 @@ from datetime import datetime
 import pathlib
 from pathlib import Path
 
-print(pathlib.Path(__file__).parent.absolute())
+
 def main():
 
     new = []
@@ -22,7 +22,7 @@ def main():
     # save output incase pandas save goes wrong
     d = {}
     float_finder = re.compile(r"[-+]?\d*\.\d+|\d+")  # regex for float
-    path = Path.cwd()
+    path = pathlib.Path(__file__).parent.absolute()
     df = pd.read_csv(Path(path / "rxiv.csv"))
     for index, row in df.iterrows():
         run = {}
