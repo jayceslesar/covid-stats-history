@@ -9,7 +9,6 @@ import pathlib
 from datetime import date
 import datetime
 import lxml.html
-import pandas as pd
 
 
 
