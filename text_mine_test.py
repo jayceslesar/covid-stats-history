@@ -16,7 +16,7 @@ search_params = {"R0": ["R0=", "R0 =", "R0", "reproductive number"]}
 R0_LOWER_BOUND = 0.9
 R0_UPPER_BOUND = 6.5
 d = {}
-float_finder = re.compile(r"[-+]?\d*\.\d+|\d+")
+float_finder = re.compile(r"[-+]?\d*\.\d+|\d+")  # regex for float
 
 df = pd.read_csv("rxiv.csv")
 for index, row in df.iterrows():
@@ -34,11 +34,11 @@ for index, row in df.iterrows():
                     new_matches.append(re.findall(float_finder, m))
                 actual_matches = []
                 for ms in new_matches:
-                    if len(ms) == 0:
-                        continue
-                    for m in ms:
-                        if '.' in m and float(m) > R0_LOWER_BOUND and float(m) < R0_UPPER_BOUND:
-                            actual_matches.append(float(m))
+                    if len(ms) > 0:
+                        for m in ms:
+                            if '.' in m and float(m) > R0_LOWER_BOUND and float(m) < R0_UPPER_BOUND:
+                                actual_matches.append(float(m))
+                actual_matches = list(set(actual_matches))
                 if len(actual_matches) == 0:
                     continue
                 print("R0 Found", actual_matches)
