@@ -28,7 +28,10 @@ for index, row in df.iterrows():
             if p in text:
                 for p_mod in search_params[p]:
                     for match in re.finditer(p_mod, text):
-                        matches.append((text[match.start():match.end() + 20]))
+                        potential = text[match.start():match.end() + 20]
+                        if potential[potential.index(p_mod) + len(p_mod) + 1] == '.':
+                            continue
+                        matches.append(potential)
                 new_matches = []
                 for m in matches:
                     new_matches.append(re.findall(float_finder, m))
