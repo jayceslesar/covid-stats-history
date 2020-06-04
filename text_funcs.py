@@ -1,5 +1,6 @@
 from tika import parser
 import pandas as pd
+import pathlib
 from pathlib import Path
 import requests
 import sys
