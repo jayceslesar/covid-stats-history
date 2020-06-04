@@ -2,7 +2,9 @@ import pandas as pd
 import text_funcs
 import re
 import json
-import time
+from datetime import datetime
+import pathlib
+from pathlib import Path
 
 
 def main():
@@ -20,8 +22,8 @@ def main():
     # save output incase pandas save goes wrong
     d = {}
     float_finder = re.compile(r"[-+]?\d*\.\d+|\d+")  # regex for float
-
-    df = pd.read_csv("rxiv.csv")
+    path = Path.cwd()
+    df = pd.read_csv(Path(path / "rxiv.csv"))
     for index, row in df.iterrows():
         run = {}
         # store first gen matches (text)
@@ -82,12 +84,15 @@ def main():
 
 
     new = pd.DataFrame(new)
-    new.to_csv("R0test.csv")
+    new.to_csv(Path(path / "R0test.csv"))
     print(new)
-    df.to_csv("R0.csv")
 
 
-start_time = time.time()
-print(start_time)
+
+now = datetime.now()
+current_time = now.strftime("%H:%M:%S")
+print(current_time)
 main()
-print("--- %s seconds ---" % (time.time() - start_time))
+now = datetime.now()
+current_time = now.strftime("%H:%M:%S")
+print(current_time)
