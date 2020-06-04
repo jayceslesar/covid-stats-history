@@ -9,7 +9,7 @@ import sys
 def get_text(DOI:str) -> str:
     path = pathlib.Path(__file__).parent.absolute()
     name = "curr."
-    fp = Path(Path.cwd() / "pdfs" / "curr.pdf")  # build filepath
+    fp = Path(path / "pdfs" / "curr.pdf")  # build filepath
     url = "https://www.medrxiv.org/content/" + DOI + "v1.full.pdf"  # build url
     response = requests.get(url)
     fp.write_bytes(response.content)  # save .pdf  # BUG::writes encoded characters as bytes and reads them incorrectly !?!?!?
