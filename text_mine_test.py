@@ -9,7 +9,7 @@ import sys
 
 
 def find_values(of_name, OFFSET):
-
+    offset = int(OFFSET)
     new = []
 
     # "reproductive number", "Basic reproductive number"
@@ -41,7 +41,7 @@ def find_values(of_name, OFFSET):
                         # look for each permutation in text
                         for match in re.finditer(p_mod, text):
                             # grab the start of it to the end of it and then offset
-                            potential = text[match.start():match.end() + OFFSET]
+                            potential = text[match.start():match.end() + offset]
                             # if the search query is not at the end of a sentence
                             if potential[potential.index(p_mod) + len(p_mod) + 1] != '.':
                                 # grab text
