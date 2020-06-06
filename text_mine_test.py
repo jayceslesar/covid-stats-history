@@ -5,9 +5,10 @@ import json
 from datetime import datetime
 import pathlib
 from pathlib import Path
+import sys
 
 
-def main():
+def find_values(of_name, OFFSET):
 
     new = []
 
@@ -40,7 +41,6 @@ def main():
                         # look for each permutation in text
                         for match in re.finditer(p_mod, text):
                             # grab the start of it to the end of it and then offset
-                            OFFSET = 15
                             potential = text[match.start():match.end() + OFFSET]
                             # if the search query is not at the end of a sentence
                             if potential[potential.index(p_mod) + len(p_mod) + 1] != '.':
@@ -84,15 +84,15 @@ def main():
 
 
     new = pd.DataFrame(new)
-    new.to_csv(Path(path / "R0test.csv"))
-    print(new)
+    of = of_name + ".csv"
+    new.to_csv(Path(path / of))
 
 
 
 now = datetime.now()
 current_time = now.strftime("%H:%M:%S")
 print(current_time)
-main()
+find_values(sys.argv[1], sys.argv[2])
 now = datetime.now()
 current_time = now.strftime("%H:%M:%S")
 print(current_time)
