@@ -113,9 +113,13 @@ def main():
     rows = gen_rows(df)
     # start each process
     for row in rows:
-        p = multiprocessing.Process(target=process_text, args=(row, to_df))
-        jobs.append(p)
-        p.start()
+        try:
+            p = multiprocessing.Process(target=process_text, args=(row, to_df))
+            jobs.append(p)
+            p.start()
+        except Exception as e:
+            print("EXCEPTION", e)
+            pass
     # join each process
     for proc in jobs:
         proc.join()
