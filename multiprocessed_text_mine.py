@@ -48,7 +48,6 @@ def process_text(row, to_df:list) -> dict:
     path = pathlib.Path(__file__).parent.absolute()
     name = hostname + row["DOI"].replace("/", "") + ".pdf"
     fp = Path(path / "pdfs" / name)  # build filepath
-    os.remove(fp)
     # get search params TODO::make adaptable
     search_params = {"R0": ["R0=", "R0 =", "R0", "reproductive number"]}
     R0_LOWER_BOUND = 0.9
@@ -67,8 +66,11 @@ def process_text(row, to_df:list) -> dict:
                     # grab the string plus the OFFSET (x chars after the param_type was found)
                     potential_match_string = text[param_type_match.start():param_type_match.end() + OFFSET]
                     # if param_type_match is not at the end of a sentence, grab it
-                    if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
-                        string_matches.append(potential_match_string)
+                    try:
+                        if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
+                            string_matches.append(potential_match_string)
+                    except ValueError:
+                        pass
     # strip all the flaots out
     float_finder = re.compile(r"[-+]?\d*\.\d+|\d+")
     for string_match in string_matches:
@@ -82,6 +84,12 @@ def process_text(row, to_df:list) -> dict:
                     final_matches.append(f)
     print("-----------------------------------------------------------------------------------------------------------------------")
     print(row["title"])
+    try:
+        os.remove(fp)
+    except PermissionError:
+        time.sleep(0.1)
+        os.remove(fp)
+        pass
     if len(final_matches) > 0:
                 final_matches = list(set(final_matches))
                 print("R0 Found", final_matches)
