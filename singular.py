@@ -6,8 +6,6 @@ import requests
 import sys
 import os
 import socket
-import multiprocessing
-from multiprocessing import Pool
 import re
 import time
 from datetime import datetime
@@ -49,7 +47,7 @@ def get_text(DOI:str) -> str:
     return text.lower()
 
 
-def process_text(row, to_df:list) -> dict:
+def process_text(row) -> dict:
     """processes the pdfs and handles matches and returning data"""
     run = {}
     text = get_text(row["DOI"])
@@ -113,34 +111,25 @@ def process_text(row, to_df:list) -> dict:
                 run["database"] = row["database"]
                 run["flag"] = ""
                 # add to shared list
-                to_df.append(run)
+                return run
 
 
 def main():
+    out = []
     # get path and read input csv
     path = pathlib.Path(__file__).parent.absolute()
     df = pd.read_csv(Path(path / "rxiv.csv"))
-    # start a manager to share output on processes
-    manager = multiprocessing.Manager()
-    to_df = manager.list()
-    p = Pool(os.cpu_count())
-    jobs = []
     # make the generator of dataframe
     rows = gen_rows(df)
     # start each process
     for row in rows:
         try:
-            p = multiprocessing.Process(target=process_text, args=(row, to_df))
-            jobs.append(p)
-            p.start()
+            out.append(process_text(row))
         except Exception as e:
             print("EXCEPTION", e)
             continue
-    # join each process
-    for proc in jobs:
-        proc.join()
 
-    df_out = pd.DataFrame(to_df)
+    df_out = pd.DataFrame(out)
     df.to_csv(Path(path / "mined.csv"))
 
 
