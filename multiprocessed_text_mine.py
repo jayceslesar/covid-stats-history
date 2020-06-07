@@ -37,7 +37,6 @@ def get_text(DOI:str) -> str:
     fp.write_bytes(response.content)  # save .pdf
     raw = parser.from_file(str(path) + "/pdfs/" + name)
     text = raw['content'].encode().decode('unicode_escape')
-    os.remove(fp)
     return text.lower()
 
 
@@ -45,6 +44,11 @@ def process_text(row, to_df:list) -> dict:
     """processes the pdfs and handles matches and returning data"""
     run = {}
     text = get_text(row["DOI"])
+    hostname = socket.gethostname()
+    path = pathlib.Path(__file__).parent.absolute()
+    name = hostname + row["DOI"].replace("/", "") + ".pdf"
+    fp = Path(path / "pdfs" / name)  # build filepath
+    os.remove(fp)
     # get search params TODO::make adaptable
     search_params = {"R0": ["R0=", "R0 =", "R0", "reproductive number"]}
     R0_LOWER_BOUND = 0.9
@@ -114,10 +118,6 @@ def main():
             p.start()
         except Exception as e:
             print("EXCEPTION", e)
-            try:
-                os.remove(fp)
-            except:
-                pass
             pass
     # join each process
     for proc in jobs:
