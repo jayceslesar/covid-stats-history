@@ -113,12 +113,24 @@ def main():
     rows = gen_rows(df)
     # start each process
     for row in rows:
+        hostname = socket.gethostname()
+        path = pathlib.Path(__file__).parent.absolute()
+        name = hostname + DOI.replace("/", "") + ".pdf"
+        fp = Path(path / "pdfs" / name)  # build filepath
         try:
             p = multiprocessing.Process(target=process_text, args=(row, to_df))
+            try:
+                os.remove(fp)
+            except:
+                pass
             jobs.append(p)
             p.start()
         except Exception as e:
             print("EXCEPTION", e)
+            try:
+                os.remove(fp)
+            except:
+                pass
             pass
     # join each process
     for proc in jobs:
@@ -128,7 +140,7 @@ def main():
     df.to_csv(Path(path / "mined.csv"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     time_f()
     main()
     time_f()
