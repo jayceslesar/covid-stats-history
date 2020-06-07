@@ -23,6 +23,7 @@ def get_text(DOI:str) -> str:
     response = requests.get(url)
     fp.write_bytes(response.content)  # save .pdf
     raw = parser.from_file(str(path) + "/pdfs/" + name)
+    time.sleep(2)
     text = raw['content'].encode().decode('unicode_escape')
     return text.lower()
 
@@ -31,4 +32,6 @@ hostname = socket.gethostname()
 path = pathlib.Path(__file__).parent.absolute()
 name = hostname + "10.1101/2020.05.24.20111807".replace("/", "") + ".pdf"
 fp = Path(path / "pdfs" / name)  # build filepath
-os.remove(fp)
+if os.path.isfile(fp):
+    print("delete")
+    os.remove(fp)
