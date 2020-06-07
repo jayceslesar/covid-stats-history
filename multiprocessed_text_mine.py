@@ -85,10 +85,12 @@ def process_text(row, to_df:list) -> dict:
     print("-----------------------------------------------------------------------------------------------------------------------")
     print(row["title"])
     try:
-        os.remove(fp)
+        os.remove(Path(path / "pdfs" / name))
+        if os.path.isfile(fp):
+            os.remove(Path(path / "pdfs" / name))
     except PermissionError:
         time.sleep(0.5)
-        os.remove(fp)
+        os.remove(Path(path / "pdfs" / name))
         pass
     if len(final_matches) > 0:
                 final_matches = list(set(final_matches))
