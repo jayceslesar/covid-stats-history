@@ -12,6 +12,16 @@ import re
 import time
 from datetime import datetime
 
+
+def delete_file(fp):
+    if os.path.isfile(fp):
+        print("deleting file...")
+        os.remove(fp)
+        print('file deleted!')
+    if not os.path.isfile(fp):
+        print("file deleted!")
+
+
 def time_f():
     """prints the time to track functions in the console"""
     now = datetime.now()
@@ -50,14 +60,10 @@ def process_text(row, to_df:list) -> dict:
     name = hostname + row["DOI"].replace("/", "") + ".pdf"
     fp = Path(path / "pdfs" / name)  # build filepath
     try:
-        os.remove(Path(path / "pdfs" / name))
-        if os.path.isfile(fp):
-            os.remove(Path(path / "pdfs" / name))
+        delete_file(fp)
     except PermissionError:
         time.sleep(1)
-        os.remove(Path(path / "pdfs" / name))
-        if os.path.isfile(fp):
-            os.remove(Path(path / "pdfs" / name))
+        delete_file(fp)
         pass
     # get search params TODO::make adaptable
     search_params = {"R0": ["R0=", "R0 =", "R0", "reproductive number"]}
