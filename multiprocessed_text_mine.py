@@ -45,8 +45,11 @@ def get_text(DOI:str) -> str:
     fp.write_bytes(response.content)  # save .pdf
     raw = parser.from_file(str(path) + "/pdfs/" + name)
     time.sleep(2)
-    text = raw['content'].encode().decode('unicode_escape')
-    return text.lower()
+    try:
+        text = raw['content'].encode().decode('unicode_escape')
+        return text.lower()
+    except:
+        return ""
 
 
 def process_text(row, to_df:list) -> dict:
@@ -123,19 +126,31 @@ def main():
     # start a manager to share output on processes
     manager = multiprocessing.Manager()
     to_df = manager.list()
-    p = Pool(os.cpu_count())
+    p = Pool()
     jobs = []
     # make the generator of dataframe
     rows = gen_rows(df)
     # start each process
     for row in rows:
-        try:
-            p = multiprocessing.Process(target=process_text, args=(row, to_df))
-            jobs.append(p)
-            p.start()
-        except Exception as e:
-            print("EXCEPTION", e)
-            continue
+        passed = False
+        while not passed:
+            try:
+                p = multiprocessing.Process(target=process_text, args=(row, to_df))
+                jobs.append(p)
+                p.start()
+                passed = True
+            except TypeError:
+                time.sleep(10)
+            except AttributeError:
+                time.sleep(10)
+            except ConnectionRefusedError:
+                time.sleep(10)
+            except RuntimeError:
+                time.sleep(10)
+            except Exception as e:
+                print("EXCEPTION", e)
+                passed = True
+                continue
     # join each process
     for proc in jobs:
         proc.join()
