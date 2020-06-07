@@ -37,12 +37,7 @@ def get_text(DOI:str) -> str:
     fp.write_bytes(response.content)  # save .pdf
     raw = parser.from_file(str(path) + "/pdfs/" + name)
     text = raw['content'].encode().decode('unicode_escape')
-    try:
-        os.remove(fp)
-    except PermissionError:
-        time.sleep(0.1)
-        os.remove(fp)
-        pass
+    os.remove(fp)
     return text.lower()
 
 
@@ -113,16 +108,8 @@ def main():
     rows = gen_rows(df)
     # start each process
     for row in rows:
-        hostname = socket.gethostname()
-        path = pathlib.Path(__file__).parent.absolute()
-        name = hostname + row["DOI"].replace("/", "") + ".pdf"
-        fp = Path(path / "pdfs" / name)  # build filepath
         try:
             p = multiprocessing.Process(target=process_text, args=(row, to_df))
-            try:
-                os.remove(fp)
-            except:
-                pass
             jobs.append(p)
             p.start()
         except Exception as e:
