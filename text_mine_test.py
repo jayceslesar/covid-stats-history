@@ -8,7 +8,9 @@ from pathlib import Path
 import sys
 
 
-def find_values(of_name, OFFSET):
+def find_values(of_name:str, OFFSET:int) -> None:
+    """pass in the spreadsheet of DOI's to check and the offset for each potential match (> 5)"""
+    # 
     offset = int(OFFSET)
     new = []
 
