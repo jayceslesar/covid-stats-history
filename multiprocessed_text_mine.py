@@ -43,7 +43,7 @@ def get_text(DOI:str) -> str:
         time.sleep(0.1)
         os.remove(fp)
         pass
-    return text
+    return text.lower()
 
 
 def process_text(row, to_df:list) -> dict:
@@ -60,11 +60,11 @@ def process_text(row, to_df:list) -> dict:
     final_matches = []
     # search each paramater
     for param in search_params.keys():
-        if param in text:
+        if param.lower() in text:
             # search each subparamater
             for param_type in search_params[param]:
                 # regex
-                for param_type_match in re.finditer(param_type, text):
+                for param_type_match in re.finditer(param_type.lower(), text):
                     # grab the string plus the OFFSET (x chars after the param_type was found)
                     potential_match_string = text[param_type_match.start():param_type_match.end() + OFFSET]
                     # if param_type_match is not at the end of a sentence, grab it
