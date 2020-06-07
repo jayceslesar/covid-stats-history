@@ -1,37 +1,11 @@
-from tika import parser
-import pandas as pd
-import pathlib
-from pathlib import Path
+import io
 import requests
-import sys
-import os
-import socket
-import multiprocessing
-from multiprocessing import Pool
-import re
-import time
-from datetime import datetime
+import PyPDF2
 
+url = "https://www.medrxiv.org/content/10.1101/2020.05.23.20111021v2.full.pdf"
+response = requests.get(url, stream=True)
+pdf = PyPDF2.PdfFileReader(io.BytesIO(response.content))
 
-def get_text(DOI:str) -> str:
-    """gets the text from a given DOI, will need to add in a database var soon as it will be different"""
-    hostname = socket.gethostname()
-    path = pathlib.Path(__file__).parent.absolute()
-    name = hostname + DOI.replace("/", "") + ".pdf"
-    fp = Path(path / "pdfs" / name)  # build filepath
-    url = "https://www.medrxiv.org/content/" + DOI + "v1.full.pdf"  # build url
-    response = requests.get(url)
-    fp.write_bytes(response.content)  # save .pdf
-    raw = parser.from_file(str(path) + "/pdfs/" + name)
-    time.sleep(2)
-    text = raw['content'].encode().decode('unicode_escape')
-    return text.lower()
-
-get_text("10.1101/2020.05.24.20111807")
-hostname = socket.gethostname()
-path = pathlib.Path(__file__).parent.absolute()
-name = hostname + "10.1101/2020.05.24.20111807".replace("/", "") + ".pdf"
-fp = Path(path / "pdfs" / name)  # build filepath
-if os.path.isfile(fp):
-    print("delete")
-    os.remove(fp)
+with open('output.txt', 'w') as f_output:
+    for page in range(pdf.getNumPages()):
+        f_output.write(str(pdf.getPage(page).extractText()))
