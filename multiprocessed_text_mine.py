@@ -87,7 +87,7 @@ def process_text(row, to_df:list) -> dict:
     try:
         os.remove(fp)
     except PermissionError:
-        time.sleep(0.1)
+        time.sleep(0.5)
         os.remove(fp)
         pass
     if len(final_matches) > 0:
