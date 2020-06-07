@@ -18,8 +18,6 @@ def delete_file(fp):
         print("deleting file...")
         os.remove(fp)
         print('file deleted!')
-    if not os.path.isfile(fp):
-        print("file deleted!")
 
 
 def time_f():
@@ -137,7 +135,7 @@ def main():
             p.start()
         except Exception as e:
             print("EXCEPTION", e)
-            pass
+            continue
     # join each process
     for proc in jobs:
         proc.join()
