@@ -115,7 +115,7 @@ def main():
     for row in rows:
         hostname = socket.gethostname()
         path = pathlib.Path(__file__).parent.absolute()
-        name = hostname + DOI.replace("/", "") + ".pdf"
+        name = hostname + row["DOI"].replace("/", "") + ".pdf"
         fp = Path(path / "pdfs" / name)  # build filepath
         try:
             p = multiprocessing.Process(target=process_text, args=(row, to_df))
