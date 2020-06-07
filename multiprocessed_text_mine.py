@@ -36,6 +36,7 @@ def get_text(DOI:str) -> str:
     response = requests.get(url)
     fp.write_bytes(response.content)  # save .pdf
     raw = parser.from_file(str(path) + "/pdfs/" + name)
+    time.sleep(2)
     text = raw['content'].encode().decode('unicode_escape')
     return text.lower()
 
@@ -48,6 +49,16 @@ def process_text(row, to_df:list) -> dict:
     path = pathlib.Path(__file__).parent.absolute()
     name = hostname + row["DOI"].replace("/", "") + ".pdf"
     fp = Path(path / "pdfs" / name)  # build filepath
+    try:
+        os.remove(Path(path / "pdfs" / name))
+        if os.path.isfile(fp):
+            os.remove(Path(path / "pdfs" / name))
+    except PermissionError:
+        time.sleep(1)
+        os.remove(Path(path / "pdfs" / name))
+        if os.path.isfile(fp):
+            os.remove(Path(path / "pdfs" / name))
+        pass
     # get search params TODO::make adaptable
     search_params = {"R0": ["R0=", "R0 =", "R0", "reproductive number"]}
     R0_LOWER_BOUND = 0.9
@@ -84,14 +95,6 @@ def process_text(row, to_df:list) -> dict:
                     final_matches.append(f)
     print("-----------------------------------------------------------------------------------------------------------------------")
     print(row["title"])
-    try:
-        os.remove(Path(path / "pdfs" / name))
-        if os.path.isfile(fp):
-            os.remove(Path(path / "pdfs" / name))
-    except PermissionError:
-        time.sleep(0.5)
-        os.remove(Path(path / "pdfs" / name))
-        pass
     if len(final_matches) > 0:
                 final_matches = list(set(final_matches))
                 print("R0 Found", final_matches)
