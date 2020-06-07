@@ -74,6 +74,7 @@ def process_text(row) -> dict:
     print("-----------------------------------------------------------------------------------------------------------------------")
     print(row["title"])
     if len(final_matches) > 0:
+                final_matches = list(set(final_matches))
                 print("R0 Found", final_matches)
                 run["title"] = row["title"]
                 run["DOI"] = row["DOI"]
