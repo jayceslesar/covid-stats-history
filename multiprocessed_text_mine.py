@@ -104,15 +104,15 @@ def main():
     # get path and read input csv
     path = pathlib.Path(__file__).parent.absolute()
     df = pd.read_csv(Path(path / "rxiv.csv"))
-    # make the generator of dataframe
-    G = gen_rows(df)
     # start a manager to share output on processes
     manager = multiprocessing.Manager()
     to_df = manager.list()
     p = Pool(os.cpu_count())
     jobs = []
+    # make the generator of dataframe
+    rows = gen_rows(df)
     # start each process
-    for row in G:
+    for row in rows:
         p = multiprocessing.Process(target=process_text, args=(row, to_df))
         jobs.append(p)
         p.start()
