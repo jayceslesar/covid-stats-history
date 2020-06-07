@@ -43,8 +43,11 @@ def get_text(DOI:str) -> str:
     fp.write_bytes(response.content)  # save .pdf
     raw = parser.from_file(str(path) + "/pdfs/" + name)
     time.sleep(2)
-    text = raw['content'].encode().decode('unicode_escape')
-    return text.lower()
+    try:
+        text = raw['content'].encode().decode('unicode_escape')
+        return text.lower()
+    except:
+        return ""
 
 
 def process_text(row) -> dict:
@@ -115,7 +118,7 @@ def process_text(row) -> dict:
 
 
 def main():
-    out = []
+    to_df = []
     # get path and read input csv
     path = pathlib.Path(__file__).parent.absolute()
     df = pd.read_csv(Path(path / "rxiv.csv"))
@@ -123,13 +126,25 @@ def main():
     rows = gen_rows(df)
     # start each process
     for row in rows:
-        try:
-            out.append(process_text(row))
-        except Exception as e:
-            print("EXCEPTION", e)
-            continue
+        passed = False
+        while not passed:
+            try:
+                to_df.append(process_text(row))
+                passed = True
+            except TypeError:
+                time.sleep(10)
+            except AttributeError:
+                time.sleep(10)
+            except ConnectionRefusedError:
+                time.sleep(10)
+            except RuntimeError:
+                time.sleep(10)
+            except Exception as e:
+                print("EXCEPTION", e)
+                passed = True
+                continue
 
-    df_out = pd.DataFrame(out)
+    df_out = pd.DataFrame(to_df)
     df.to_csv(Path(path / "mined.csv"))
 
 
