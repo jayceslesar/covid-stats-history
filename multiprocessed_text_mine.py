@@ -9,6 +9,7 @@ import socket
 import multiprocessing
 from multiprocessing import Pool
 import re
+import time
 from datetime import datetime
 
 def time_f():
@@ -36,11 +37,16 @@ def get_text(DOI:str) -> str:
     fp.write_bytes(response.content)  # save .pdf
     raw = parser.from_file(str(path) + "/pdfs/" + name)
     text = raw['content'].encode().decode('unicode_escape')
-    os.remove(fp)
+    try:
+        os.remove(fp)
+    except PermissionError:
+        time.sleep(0.1)
+        os.remove(fp)
+        pass
     return text
 
 
-def process_text(row) -> dict:
+def process_text(row, to_df:list) -> dict:
     """processes the pdfs and handles matches and returning data"""
     run = {}
     text = get_text(row["DOI"])
@@ -90,15 +96,25 @@ def process_text(row) -> dict:
                 # fill in others...
                 run["database"] = row["database"]
                 run["flag"] = ""
-                return run
+                to_df.append(run)
 
 
 def main():
     path = pathlib.Path(__file__).parent.absolute()
     df = pd.read_csv(Path(path / "rxiv.csv"))
     G = gen_rows(df)
+    manager = multiprocessing.Manager()
+    to_df = manager.list()
     p = Pool(os.cpu_count())
-    to_df = p.map(process_text, G)
+    jobs = []
+    for row in G:
+        p = multiprocessing.Process(target=process_text, args=(row, to_df))
+        jobs.append(p)
+        p.start()
+
+    for proc in jobs:
+        proc.join()
+
     df_out = pd.DataFrame(to_df)
     df.to_csv(Path(path / "mined.csv"))
 
