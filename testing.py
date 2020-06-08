@@ -126,18 +126,21 @@ def process_text(row) -> dict:
 
 
 def main():
-    multiprocessing.set_start_method("spawn")
     # get path and read input csv
     path = pathlib.Path(__file__).parent.absolute()
     df = pd.read_csv(Path(path / "rxiv.csv"))
+    # explicit spawn for unix
+    multiprocessing.set_start_method("spawn")
+    # use all CPU's
     p = Pool(os.cpu_count())
-    jobs = []
     # make the generator of dataframe
     rows = gen_rows(df)
     # start map
     to_df = p.map(process_text, rows)
-    print(to_df)
-    # df.to_csv(Path(path / "mined.csv"))
+    # make df
+    df = pd.DataFrame(to_df)
+    # save
+    df.to_csv(Path(path / "mined.csv"))
 
 
 if __name__ == "__main__":

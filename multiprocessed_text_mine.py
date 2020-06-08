@@ -11,6 +11,7 @@ from multiprocessing import Pool
 import re
 import time
 from datetime import datetime
+import warnings
 
 
 def delete_file(fp):
@@ -43,8 +44,13 @@ def get_text(DOI:str) -> str:
     url = "https://www.medrxiv.org/content/" + DOI + "v1.full.pdf"  # build url
     response = requests.get(url)
     fp.write_bytes(response.content)  # save .pdf
-    raw = parser.from_file(str(path) + "/pdfs/" + name)
-    time.sleep(2)
+    try:
+        raw = parser.from_file(str(path) + "/pdfs/" + name)
+        time.sleep(2)
+    except Warning:
+        time.sleep(10)
+        raw = parser.from_file(str(path) + "/pdfs/" + name)
+        time.sleep(2)
     try:
         text = raw['content'].encode().decode('unicode_escape')
         return text.lower()
@@ -52,7 +58,7 @@ def get_text(DOI:str) -> str:
         return ""
 
 
-def process_text(row, to_df:list) -> dict:
+def process_text(row) -> dict:
     """processes the pdfs and handles matches and returning data"""
     run = {}
     text = get_text(row["DOI"])
@@ -116,46 +122,24 @@ def process_text(row, to_df:list) -> dict:
                 run["database"] = row["database"]
                 run["flag"] = ""
                 # add to shared list
-                to_df.append(run)
+                return run
 
 
 def main():
     # get path and read input csv
     path = pathlib.Path(__file__).parent.absolute()
     df = pd.read_csv(Path(path / "rxiv.csv"))
-    # start a manager to share output on processes
-    manager = multiprocessing.Manager()
-    to_df = manager.list()
-    p = Pool(processes=1)
-    jobs = []
+    # explicit spawn for unix
+    multiprocessing.set_start_method("spawn")
+    # use all CPU's
+    p = Pool(os.cpu_count())
     # make the generator of dataframe
     rows = gen_rows(df)
-    # start each process
-    for row in rows:
-        passed = False
-        while not passed:
-            try:
-                p = multiprocessing.Process(target=process_text, args=(row, to_df))
-                jobs.append(p)
-                p.start()
-                passed = True
-            except TypeError:
-                p.apply_async(time.sleep, (10,))
-            except AttributeError:
-                p.apply_async(time.sleep, (10,))
-            except ConnectionRefusedError:
-                p.apply_async(time.sleep, (10,))
-            except RuntimeError:
-                p.apply_async(time.sleep, (10,))
-            except ConnectionError:
-                p.apply_async(time.sleep, (10,))
-            except Exception as e:
-                print("EXCEPTION", e)
-                passed = True
-                continue
-    p.join()
-
-    df_out = pd.DataFrame(to_df)
+    # start map
+    to_df = p.map(process_text, rows)
+    # make df
+    df = pd.DataFrame(to_df)
+    # save
     df.to_csv(Path(path / "mined.csv"))
 
 
