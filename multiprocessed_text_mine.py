@@ -15,6 +15,13 @@ import warnings
 import json
 
 
+def bad_keywords(keywords:list, text:str):
+    for keyword in keywords:
+        if keyword in text:
+            return False
+    return True
+
+
 def delete_file(fp):
     if os.path.isfile(fp):
         os.remove(fp)
@@ -52,7 +59,7 @@ def get_text(DOI:str) -> str:
         raw = parser.from_file(str(path) + "/pdfs/" + name)
         time.sleep(2)
     try:
-        text = raw['content'].encode().decode('utf-8', 'ignore')
+        text = raw['content'].encode().decode("unicode_escape", "ignore")
         return text.lower()
     except Exception as e:
         print(e)
@@ -75,6 +82,7 @@ def process_text(row) -> dict:
         pass
     # get search params TODO::make adaptable
     search_params = {"R0": ["R0=", "R0 =", "R0", "reproductive number"]}
+    bad_r0_keywords = ["above", "below"]
     R0_LOWER_BOUND = 0.9
     R0_UPPER_BOUND = 6.5
     OFFSET = 20
@@ -93,7 +101,9 @@ def process_text(row) -> dict:
                     # if param_type_match is not at the end of a sentence, grab it
                     try:
                         if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
-                            string_matches.append(potential_match_string)
+                            if not bad_keywords(bad_r0_keywords, potential_match_string):
+                                print(potential_match_string)
+                                string_matches.append(potential_match_string)
                     except ValueError:
                         pass
     # strip all the flaots out
@@ -137,7 +147,7 @@ def main():
     if not os.path.isdir(Path(path / "jsons")):
         os.mkdir(Path(path / "jsons"))
     # read
-    df = pd.read_csv(Path(path / "rxivtest.csv"))
+    df = pd.read_csv(Path(path / "rxiv.csv"))
     # explicit spawn for unix
     multiprocessing.set_start_method("spawn")
     # use all CPU's
