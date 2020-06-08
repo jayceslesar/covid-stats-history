@@ -47,14 +47,16 @@ def get_text(DOI:str) -> str:
     try:
         raw = parser.from_file(str(path) + "/pdfs/" + name)
         time.sleep(2)
-    except Warning:
-        time.sleep(10)
+    except Warning as w:
+        print("WARNING", w)
+        time.sleep(5)
         raw = parser.from_file(str(path) + "/pdfs/" + name)
         time.sleep(2)
     try:
         text = raw['content'].encode().decode('unicode_escape')
         return text.lower()
-    except:
+    except Exception as e:
+        print("EXCEPTION", e)
         return ""
 
 
@@ -76,7 +78,7 @@ def process_text(row) -> dict:
     search_params = {"R0": ["R0=", "R0 =", "R0", "reproductive number"]}
     R0_LOWER_BOUND = 0.9
     R0_UPPER_BOUND = 6.5
-    OFFSET = 10
+    OFFSET = 15
     string_matches = []
     float_matches = []
     final_matches = []
