@@ -147,6 +147,8 @@ def main():
                 p.apply_async(time.sleep, (10,))
             except RuntimeError:
                 p.apply_async(time.sleep, (10,))
+            except ConnectionError:
+                p.apply_async(time.sleep, (10,))
             except Exception as e:
                 print("EXCEPTION", e)
                 passed = True
