@@ -71,7 +71,7 @@ def process_text(row) -> dict:
     text = get_text(str(row["DOI"]))
     hostname = socket.gethostname()
     path = pathlib.Path(__file__).parent.absolute()
-    name = hostname + row["DOI"].replace("/", "") + ".pdf"
+    name = hostname + str(row["DOI"]).replace("/", "") + ".pdf"
     fp = Path(path / "pdfs" / name)  # build filepath
     try:
         delete_file(fp)
