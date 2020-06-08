@@ -16,9 +16,7 @@ import warnings
 
 def delete_file(fp):
     if os.path.isfile(fp):
-        print("deleting file...")
         os.remove(fp)
-        print('file deleted!')
 
 
 def time_f():
@@ -87,6 +85,7 @@ def process_text(row) -> dict:
         string_matches = []
         float_matches = []
         final_matches = []
+        # TODO::functionalize
         # search each paramater
         for param in search_params.keys():
             if param.lower() in text:
