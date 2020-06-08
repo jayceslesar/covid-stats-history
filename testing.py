@@ -11,6 +11,7 @@ from multiprocessing import Pool
 import re
 import time
 from datetime import datetime
+import warnings
 
 
 def delete_file(fp):
@@ -43,8 +44,13 @@ def get_text(DOI:str) -> str:
     url = "https://www.medrxiv.org/content/" + DOI + "v1.full.pdf"  # build url
     response = requests.get(url)
     fp.write_bytes(response.content)  # save .pdf
-    raw = parser.from_file(str(path) + "/pdfs/" + name)
-    time.sleep(2)
+    try:
+        raw = parser.from_file(str(path) + "/pdfs/" + name)
+        time.sleep(2)
+    except Warning:
+        time.sleep(10)
+        raw = parser.from_file(str(path) + "/pdfs/" + name)
+        time.sleep(2)
     try:
         text = raw['content'].encode().decode('unicode_escape')
         return text.lower()
