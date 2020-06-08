@@ -137,7 +137,7 @@ def process_text(row) -> dict:
 def main():
     # get path and read input csv
     path = pathlib.Path(__file__).parent.absolute()
-    df = pd.read_csv(Path(path / "rxiv.csv"))
+    df = pd.read_csv(Path(path / "rxivtest.csv"))
     # explicit spawn for unix
     multiprocessing.set_start_method("spawn")
     # use all CPU's
