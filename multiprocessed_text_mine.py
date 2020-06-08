@@ -126,7 +126,7 @@ def main():
     # start a manager to share output on processes
     manager = multiprocessing.Manager()
     to_df = manager.list()
-    p = Pool()
+    p = Pool(processes=1)
     jobs = []
     # make the generator of dataframe
     rows = gen_rows(df)
@@ -140,20 +140,18 @@ def main():
                 p.start()
                 passed = True
             except TypeError:
-                time.sleep(10)
+                p.apply_async(time.sleep, (10,))
             except AttributeError:
-                time.sleep(10)
+                p.apply_async(time.sleep, (10,))
             except ConnectionRefusedError:
-                time.sleep(10)
+                p.apply_async(time.sleep, (10,))
             except RuntimeError:
-                time.sleep(10)
+                p.apply_async(time.sleep, (10,))
             except Exception as e:
                 print("EXCEPTION", e)
                 passed = True
                 continue
-    # join each process
-    for proc in jobs:
-        proc.join()
+    p.join()
 
     df_out = pd.DataFrame(to_df)
     df.to_csv(Path(path / "mined.csv"))
