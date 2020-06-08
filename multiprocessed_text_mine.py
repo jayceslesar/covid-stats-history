@@ -13,7 +13,6 @@ import time
 from datetime import datetime
 import warnings
 import json
-from glob import glob
 
 
 def delete_file(fp):
@@ -42,33 +41,28 @@ def get_text(DOI:str) -> str:
     path = pathlib.Path(__file__).parent.absolute()
     name = hostname + str(DOI).replace("/", "") + ".pdf"
     fp = Path(path / "pdfs" / name)  # build filepath
-    url = "https://www.medrxiv.org/content/" + DOI + "v1.full.pdf"  # build url
+    url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
     response = requests.get(url)
     fp.write_bytes(response.content)  # save .pdf
     try:
         raw = parser.from_file(str(path) + "/pdfs/" + name)
         time.sleep(2)
-    except FileNotFoundError:
-        time.sleep(5)
-        raw = parser.from_file(str(path) + "/pdfs/" + name)
-    except Warning as w:
-        print("WARNING", w)
-        time.sleep(5)
+    except Warning:
+        time.sleep(10)
         raw = parser.from_file(str(path) + "/pdfs/" + name)
         time.sleep(2)
     try:
-        text = raw['content'].encode().decode('unicode_escape')
+        text = raw['content'].encode().decode('utf-8', 'ignore')
         return text.lower()
     except Exception as e:
-        print("EXCEPTION", e)
+        print(e)
         return ""
 
 
 def process_text(row) -> dict:
-    # try:
     """processes the pdfs and handles matches and returning data"""
     run = {}
-    text = get_text(str(row["DOI"]))
+    text = get_text(row["DOI"])
     hostname = socket.gethostname()
     path = pathlib.Path(__file__).parent.absolute()
     name = hostname + str(row["DOI"]).replace("/", "") + ".pdf"
@@ -87,7 +81,6 @@ def process_text(row) -> dict:
     string_matches = []
     float_matches = []
     final_matches = []
-    # TODO::functionalize
     # search each paramater
     for param in search_params.keys():
         if param.lower() in text:
@@ -114,9 +107,9 @@ def process_text(row) -> dict:
                 f = float(float_match)
                 if f > R0_LOWER_BOUND and f < R0_UPPER_BOUND:
                     final_matches.append(f)
-    print("-----------------------------------------------------------------------------------------------------------------------")
-    print(row["title"])
     if len(final_matches) > 0:
+                print("-----------------------------------------------------------------------------------------------------------------------")
+                print(row["title"])
                 final_matches = list(set(final_matches))
                 print("R0 Found", final_matches)
                 run["title"] = row["title"]
@@ -134,19 +127,16 @@ def process_text(row) -> dict:
                 with open(Path(path / "jsons" / name), 'w') as f:
                     json.dump(run, f)
                     f.close()
-    # except Exception as e:
-    #     print(e)
-    #     pass
 
 
 def main():
-    # get path and read input csv
+    # pathing and dirs
     path = pathlib.Path(__file__).parent.absolute()
-    # pathing for files
     if not os.path.isdir(Path(path / "pdfs")):
         os.mkdir(Path(path / "pdfs"))
     if not os.path.isdir(Path(path / "jsons")):
         os.mkdir(Path(path / "jsons"))
+    # read
     df = pd.read_csv(Path(path / "rxivtest.csv"))
     # explicit spawn for unix
     multiprocessing.set_start_method("spawn")
@@ -154,17 +144,17 @@ def main():
     p = Pool(os.cpu_count())
     # make the generator of dataframe
     rows = gen_rows(df)
-    # start map -> generator
-    to_df_gen = p.map(process_text, rows)
-    to_df = []
+    # start map
+    to_df = p.map(process_text, rows)
+    to_df_all = []
     for f in os.listdir(Path(path / "jsons")):
         f_actual = open(Path(path / "jsons" / f))
-        to_df.append(json.load(f_actual))
+        to_df_all.append(json.load(f_actual))
+        f_actual.close()
         os.remove(Path(path / "jsons" / f))
     # make df
-    df = pd.DataFrame(to_df)
-    # save
-    df.to_csv(Path(path / "mined.csv"))
+    df = pd.DataFrame(to_df_all)
+    df.to_csv("mined.csv")
 
 
 if __name__ == "__main__":
