@@ -131,7 +131,7 @@ def process_text(row) -> dict:
                 run["flag"] = ""
                 # write to file
                 name = hostname + str(row["DOI"]).replace("/", "") + ".json"
-                with open(Path(path / name), 'w') as f:
+                with open(Path(path / "jsons" / name), 'w') as f:
                     json.dump(run, f)
                     f.close()
     # except Exception as e:
@@ -157,10 +157,10 @@ def main():
     # start map -> generator
     to_df_gen = p.map(process_text, rows)
     to_df = []
-    for f in glob(str(Path(path / "jsons*.json"))):
-        to_df.append(json.load(f))
-        f.close()
-        os.remove(f)
+    for f in os.listdir(Path(path / "jsons")):
+        f_actual = open(Path(path / "jsons" / f))
+        to_df.append(json.load(f_actual))
+        os.remove(Path(path / "jsons" / f))
     # make df
     df = pd.DataFrame(to_df)
     # save
