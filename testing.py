@@ -58,7 +58,7 @@ def get_text(DOI:str) -> str:
         return ""
 
 
-def process_text(row, to_df:list) -> dict:
+def process_text(row) -> dict:
     """processes the pdfs and handles matches and returning data"""
     run = {}
     text = get_text(row["DOI"])
@@ -122,7 +122,7 @@ def process_text(row, to_df:list) -> dict:
                 run["database"] = row["database"]
                 run["flag"] = ""
                 # add to shared list
-                to_df.append(run)
+                return run
 
 
 def main():
@@ -130,40 +130,14 @@ def main():
     # get path and read input csv
     path = pathlib.Path(__file__).parent.absolute()
     df = pd.read_csv(Path(path / "rxiv.csv"))
-    # start a manager to share output on processes
-    manager = multiprocessing.Manager()
-    to_df = manager.list()
-    p = Pool(processes=1)
+    p = Pool(os.cpu_count())
     jobs = []
     # make the generator of dataframe
     rows = gen_rows(df)
-    # start each process
-    for row in rows:
-        passed = False
-        while not passed:
-            try:
-                p = multiprocessing.Process(target=process_text, args=(row, to_df))
-                jobs.append(p)
-                p.start()
-                passed = True
-            # except TypeError:
-            #     p.apply_async(time.sleep, (10,))
-            # except AttributeError:
-            #     p.apply_async(time.sleep, (10,))
-            # except ConnectionRefusedError:
-            #     p.apply_async(time.sleep, (10,))
-            # except RuntimeError:
-            #     p.apply_async(time.sleep, (10,))
-            # except ConnectionError:
-            #     p.apply_async(time.sleep, (10,))
-            except Exception as e:
-                print("EXCEPTION", e)
-                passed = True
-                continue
-    p.join()
-
-    df_out = pd.DataFrame(to_df)
-    df.to_csv(Path(path / "mined.csv"))
+    # start map
+    to_df = p.map(process_text, rows)
+    print(to_df)
+    # df.to_csv(Path(path / "mined.csv"))
 
 
 if __name__ == "__main__":
