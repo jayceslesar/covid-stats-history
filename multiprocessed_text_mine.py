@@ -119,7 +119,7 @@ def process_text(row) -> dict:
     print("-------------------------------------------------------------------------------------------------------------------")
     print(row["title"])
     run = {}
-    text = get_text_pypdf(row["DOI"])
+    text = get_text_pdftotext(row["DOI"])
     hostname = socket.gethostname()
     path = pathlib.Path(__file__).parent.absolute()
     name = hostname + str(row["DOI"]).replace("/", "") + ".pdf"
