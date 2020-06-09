@@ -162,9 +162,10 @@ def process_text(row) -> dict:
     for float_list in float_matches:
         if len(float_list) > 0:
             for float_match in float_list:
-                f = float(float_match)
-                if f > R0_LOWER_BOUND and f < R0_UPPER_BOUND:
-                    final_matches.append(f)
+                if str(float_match) != "1":
+                    f = float(float_match)
+                    if f > R0_LOWER_BOUND and f < R0_UPPER_BOUND:
+                        final_matches.append(f)
     if len(final_matches) > 0:
         print("---------------------------------------------------------------------------------")
         print(row["title"])
