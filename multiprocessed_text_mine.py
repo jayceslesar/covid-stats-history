@@ -97,25 +97,27 @@ def get_text_pypdf(DOI:str) -> str:
 
 
 def get_text_pdftotext(DOI:str) -> str:
-    """gets the text from a given DOI, will need to add in a database var soon as it will be different"""
-    hostname = socket.gethostname()
-    path = pathlib.Path(__file__).parent.absolute()
-    name = hostname + str(DOI).replace("/", "") + ".pdf"
-    fp = Path(path / "pdfs" / name)  # build filepath
-    url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
-    response = requests.get(url)
-    fp.write_bytes(response.content)  # save .pdf
-    with open(fp, "rb") as f:
-        pdf = pdftotext.PDF(f)
-    text = "\n\n".join(pdf)
-    f.close()
-    return text.lower()
+    try:
+        """gets the text from a given DOI, will need to add in a database var soon as it will be different"""
+        hostname = socket.gethostname()
+        path = pathlib.Path(__file__).parent.absolute()
+        name = hostname + str(DOI).replace("/", "") + ".pdf"
+        fp = Path(path / "pdfs" / name)  # build filepath
+        url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
+        response = requests.get(url)
+        fp.write_bytes(response.content)  # save .pdf
+        with open(fp, "rb") as f:
+            pdf = pdftotext.PDF(f)
+        text = "\n\n".join(pdf)
+        f.close()
+        return text.lower()
+    except Exception as e:
+        print(e)
+        return ""
 
 
 def process_text(row) -> dict:
     """processes the pdfs and handles matches and returning data"""
-    print("-------------------------------------------------------------------------------------------------------------------")
-    print(row["title"])
     run = {}
     text = get_text_pdftotext(row["DOI"])
     hostname = socket.gethostname()
@@ -165,23 +167,26 @@ def process_text(row) -> dict:
                 if f > R0_LOWER_BOUND and f < R0_UPPER_BOUND:
                     final_matches.append(f)
     if len(final_matches) > 0:
-                final_matches = list(set(final_matches))
-                print("R0 Found", final_matches)
-                run["title"] = row["title"]
-                run["DOI"] = row["DOI"]
-                run["abstract"] = row["abstract"]
-                run["pre_print_release_date"] = row["pre_print_release_date"]
-                run["publisher"] = row["publisher"]
-                run["authored_by"] = row["authored_by"]
-                run["R0"] = final_matches
-                # fill in others...
-                run["database"] = row["database"]
-                run["flag"] = ""
-                # write to file
-                name = hostname + str(row["DOI"]).replace("/", "") + ".json"
-                with open(Path(path / "jsons" / name), 'w') as f:
-                    json.dump(run, f)
-                    f.close()
+        print("---------------------------------------------------------------------------------")
+        print(row["title"])
+        print(string_matches)
+        final_matches = list(set(final_matches))
+        print("R0 Found", final_matches)
+        run["title"] = row["title"]
+        run["DOI"] = row["DOI"]
+        run["abstract"] = row["abstract"]
+        run["pre_print_release_date"] = row["pre_print_release_date"]
+        run["publisher"] = row["publisher"]
+        run["authored_by"] = row["authored_by"]
+        run["R0"] = final_matches
+        # fill in others...
+        run["database"] = row["database"]
+        run["flag"] = ""
+        # write to file
+        name = hostname + str(row["DOI"]).replace("/", "") + ".json"
+        with open(Path(path / "jsons" / name), 'w') as f:
+            json.dump(run, f)
+            f.close()
 
 
 def main():
