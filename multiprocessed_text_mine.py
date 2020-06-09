@@ -155,6 +155,8 @@ def main():
     rows = gen_rows(df)
     # start map
     to_df = p.map(process_text, rows)
+    p.close()
+    p.join()
     to_df_all = []
     for f in os.listdir(Path(path / "jsons")):
         f_actual = open(Path(path / "jsons" / f))
