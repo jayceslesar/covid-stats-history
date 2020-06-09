@@ -110,7 +110,7 @@ def get_text_pdftotext(DOI:str) -> str:
         pdf = pdftotext.PDF(f)
     text = "\n\n".join(pdf)
     f.close()
-    return text
+    return text.lower()
 
 
 def process_text(row) -> dict:
@@ -140,7 +140,7 @@ def process_text(row) -> dict:
     final_matches = []
     # search each paramater
     for param_type in search_params["R0"]:
-        if param.lower() in text:
+        if param_type.lower() in text:
             # search each subparamater
             # regex
             for param_type_match in re.finditer(param_type.lower(), text):
