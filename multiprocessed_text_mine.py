@@ -159,7 +159,8 @@ def process_text(row) -> dict:
                 try:
                     if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
                         if no_bad_keywords(bad_r0_keywords, potential_match_string):
-                            string_matches.append(potential_match_string)
+                            if not bool(re.search(r'\[\d+\]', potential_match_string)):
+                                string_matches.append(potential_match_string)
                 except ValueError:
                     pass
     # strip all the flaots out
