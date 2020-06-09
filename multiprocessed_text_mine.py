@@ -154,7 +154,7 @@ def main():
     # make the generator of dataframe
     rows = gen_rows(df)
     # start map
-    p.map(process_text, rowa)
+    p.map(process_text, rows)
     p.close()
     to_df_all = []
     for f in os.listdir(Path(path / "jsons")):
