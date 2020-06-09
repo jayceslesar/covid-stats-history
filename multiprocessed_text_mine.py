@@ -21,7 +21,7 @@ import pdftotext
 # which ones site each other
 
 
-def bad_keywords(keywords:list, text:str):
+def no_bad_keywords(keywords:list, text:str):
     for keyword in keywords:
         if keyword in text:
             return False
@@ -110,7 +110,6 @@ def get_text_pdftotext(DOI:str) -> str:
         pdf = pdftotext.PDF(f)
     text = "\n\n".join(pdf)
     f.close()
-    print(text)
     return text
 
 
@@ -151,7 +150,7 @@ def process_text(row) -> dict:
                     # if param_type_match is not at the end of a sentence, grab it
                     try:
                         if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
-                            if not bad_keywords(bad_r0_keywords, potential_match_string):
+                            if no_bad_keywords(bad_r0_keywords, potential_match_string):
                                 print(potential_match_string)
                                 string_matches.append(potential_match_string)
                     except ValueError:
