@@ -66,34 +66,38 @@ def get_text_tika(DOI:str) -> str:
         text = raw['content'].encode().decode("unicode_escape", "ignore")
         return text.lower()
     except Exception as e:
-        print(e)
+        print(e, DOI)
         return ""
 
 
 def get_text_pypdf(DOI:str) -> str:
-    """gets the text from a given DOI, will need to add in a database var soon as it will be different"""
-    hostname = socket.gethostname()
-    path = pathlib.Path(__file__).parent.absolute()
-    name = hostname + str(DOI).replace("/", "") + ".pdf"
-    fp = Path(path / "pdfs" / name)  # build filepath
-    url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
-    response = requests.get(url)
-    fp.write_bytes(response.content)  # save .pdf
+    try:
+        """gets the text from a given DOI, will need to add in a database var soon as it will be different"""
+        hostname = socket.gethostname()
+        path = pathlib.Path(__file__).parent.absolute()
+        name = hostname + str(DOI).replace("/", "") + ".pdf"
+        fp = Path(path / "pdfs" / name)  # build filepath
+        url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
+        response = requests.get(url)
+        fp.write_bytes(response.content)  # save .pdf
 
-    fd = open(str(path) + "/pdfs/" + name, "rb")  # open with pdfreader
-    doc = PDFDocument(fd)
-    all_pages = [p for p in doc.pages()]  # get pages
-    viewer = SimplePDFViewer(fd)  # use simple viwer
-    text = ""
-    for p in range(len(all_pages)):  # for each page
-        viewer.navigate(p + 1)  # nav to page
-        try:
-            viewer.render()  # render -> clean and strip
-            text += (u"".join(viewer.canvas.strings).encode(sys.stdout.encoding, errors='replace').decode("windows-1252")) + '\n'
-        except OverflowError:
-            pass
-    fd.close()
-    return text
+        fd = open(str(path) + "/pdfs/" + name, "rb")  # open with pdfreader
+        doc = PDFDocument(fd)
+        all_pages = [p for p in doc.pages()]  # get pages
+        viewer = SimplePDFViewer(fd)  # use simple viwer
+        text = ""
+        for p in range(len(all_pages)):  # for each page
+            viewer.navigate(p + 1)  # nav to page
+            try:
+                viewer.render()  # render -> clean and strip
+                text += (u"".join(viewer.canvas.strings).encode(sys.stdout.encoding, errors='replace').decode("windows-1252")) + '\n'
+            except OverflowError:
+                pass
+        fd.close()
+        return text
+    except Exception as e:
+        print(e, DOI)
+        return ""
 
 
 def get_text_pdftotext(DOI:str) -> str:
@@ -120,6 +124,10 @@ def process_text(row) -> dict:
     """processes the pdfs and handles matches and returning data"""
     run = {}
     text = get_text_pdftotext(row["DOI"])
+    if text = "":
+        text = get_text_tika(row["DOI"])
+        if text == "":
+            text = get_text_pypdf(row["DOI"])
     hostname = socket.gethostname()
     path = pathlib.Path(__file__).parent.absolute()
     name = hostname + str(row["DOI"]).replace("/", "") + ".pdf"
