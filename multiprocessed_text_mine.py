@@ -146,7 +146,7 @@ def main():
     if not os.path.isdir(Path(path / "jsons")):
         os.mkdir(Path(path / "jsons"))
     # read
-    df = pd.read_csv(Path(path / "rxiv.csv"))
+    df = pd.read_csv(Path(path / "rxivtest.csv"))
     # explicit spawn for unix
     multiprocessing.set_start_method("spawn")
     # use all CPU's
@@ -154,10 +154,8 @@ def main():
     # make the generator of dataframe
     rows = gen_rows(df)
     # start map
-    for row in rows:
-        p.map(process_text, row)
+    p.map(process_text, rowa)
     p.close()
-    p.join()
     to_df_all = []
     for f in os.listdir(Path(path / "jsons")):
         f_actual = open(Path(path / "jsons" / f))
