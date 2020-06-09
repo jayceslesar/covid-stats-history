@@ -157,13 +157,13 @@ def process_text(row) -> dict:
                 # grab the string plus the OFFSET (x chars after the param_type was found)
                 potential_match_string = text[param_type_match.start():param_type_match.end() + OFFSET]
                 for good in extenders:
-                    if extenders in potential_match_string:
+                    if good in potential_match_string:
                         potential_match_string = text[param_type_match.start():param_type_match.end() + OFFSET + 10]
                 try:
                     if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
                         if no_bad_keywords(bad_r0_keywords, potential_match_string):
                             if not bool(re.search(r'\[\d+\]', potential_match_string)):
-                                string_matches.append(potential_match_string + " ") # edge cases
+                                string_matches.append(potential_match_string.replace("\u2212", "-") + " ") # edge cases
                 except ValueError:
                     pass
     # strip all the flaots out
