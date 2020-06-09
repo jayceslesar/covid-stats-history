@@ -154,7 +154,8 @@ def main():
     # make the generator of dataframe
     rows = gen_rows(df)
     # start map
-    to_df = p.map(process_text, rows)
+    for row in rows:
+        p.map(process_text, row)
     p.close()
     p.join()
     to_df_all = []
