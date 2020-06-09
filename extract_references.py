@@ -24,7 +24,7 @@ def get_refs_web(url) -> list:
     return extract_references_from_url(url)
 
 
-def get_reds_doi(DOI) -> list:
+def get_refs_doi(DOI) -> list:
     hostname = socket.gethostname()
     path = pathlib.Path(__file__).parent.absolute()
     name = hostname + str(DOI).replace("/", "") + ".pdf"
