@@ -30,9 +30,7 @@ def get_refs_doi(DOI) -> list:
     name = hostname + str(DOI).replace("/", "") + ".pdf"
     fp = Path(path / "pdfs" / name)  # build filepath
     url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
-    response = requests.get(url)
-    fp.write_bytes(response.content)  # save .pdf
-    return extract_references_from_file(fp)
+    return get_refs_doi(url)
 
 
 print(get_refs_doi("10.1101/2020.05.21.20108621"))
