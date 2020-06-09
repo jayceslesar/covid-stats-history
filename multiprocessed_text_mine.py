@@ -124,7 +124,7 @@ def process_text(row) -> dict:
     """processes the pdfs and handles matches and returning data"""
     run = {}
     text = get_text_pdftotext(row["DOI"])
-    if text = "":
+    if text == "":
         text = get_text_tika(row["DOI"])
         if text == "":
             text = get_text_pypdf(row["DOI"])
