@@ -139,22 +139,21 @@ def process_text(row) -> dict:
     float_matches = []
     final_matches = []
     # search each paramater
-    for param in search_params.keys():
+    for param_type in search_params["R0"]:
         if param.lower() in text:
             # search each subparamater
-            for param_type in search_params[param]:
-                # regex
-                for param_type_match in re.finditer(param_type.lower(), text):
-                    # grab the string plus the OFFSET (x chars after the param_type was found)
-                    potential_match_string = text[param_type_match.start():param_type_match.end() + OFFSET]
-                    print(potential_match_string)
-                    # if param_type_match is not at the end of a sentence, grab it
-                    try:
-                        if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
-                            if no_bad_keywords(bad_r0_keywords, potential_match_string):
-                                string_matches.append(potential_match_string)
-                    except ValueError:
-                        pass
+            # regex
+            for param_type_match in re.finditer(param_type.lower(), text):
+                # grab the string plus the OFFSET (x chars after the param_type was found)
+                potential_match_string = text[param_type_match.start():param_type_match.end() + OFFSET]
+                print(potential_match_string)
+                # if param_type_match is not at the end of a sentence, grab it
+                try:
+                    if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
+                        if no_bad_keywords(bad_r0_keywords, potential_match_string):
+                            string_matches.append(potential_match_string)
+                except ValueError:
+                    pass
     # strip all the flaots out
     float_finder = re.compile(r"[-+]?\d*\.\d+|\d+")
     for string_match in string_matches:
