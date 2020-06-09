@@ -227,7 +227,7 @@ def main():
         f_actual.close()
         os.remove(Path(path / "jsons" / f))
     # make df
-    df = pd.DataFrame(to_df_all) − -
+    df = pd.DataFrame(to_df_all)
     df.to_csv("mined.csv")
 
 
