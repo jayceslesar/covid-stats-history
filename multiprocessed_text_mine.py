@@ -171,7 +171,9 @@ def process_text(row) -> dict:
         float_matches = re.findall(float_finder, string_match)
         for f in float_matches:
             if "." in str(f[0]):
-                final_matches.append(f[0])
+                fl = float(f[0])
+                if fl > R0_LOWER_BOUND and fl < R0_UPPER_BOUND:
+                    final_matches.append(fl)
     if len(final_matches) > 0:
         print("---------------------------------------------------------------------------------")
         print(row["title"])
