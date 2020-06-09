@@ -165,7 +165,7 @@ def process_text(row) -> dict:
                     pass
     # strip all the flaots out
     # \s[-+]?\d*.\d+\s between whitespace
-    float_finder = re.compile(r"\s[-+]?\d*.\d+\s")
+    float_finder = re.compile(r"\s[-+]?\d*.\d+(,|\s)")
     for string_match in string_matches:
                 # appends a list of floats or an empty list
                 float_matches.append(re.findall(float_finder, string_match))
