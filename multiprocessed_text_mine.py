@@ -13,6 +13,12 @@ import time
 from datetime import datetime
 import warnings
 import json
+import pdfreader
+from pdfreader import PDFDocument, SimplePDFViewer
+import pdftotext
+
+
+# which ones site each other
 
 
 def bad_keywords(keywords:list, text:str):
@@ -42,7 +48,7 @@ def gen_rows(df):
         yield d
 
 
-def get_text(DOI:str) -> str:
+def get_text_tika(DOI:str) -> str:
     """gets the text from a given DOI, will need to add in a database var soon as it will be different"""
     hostname = socket.gethostname()
     path = pathlib.Path(__file__).parent.absolute()
@@ -55,9 +61,8 @@ def get_text(DOI:str) -> str:
         raw = parser.from_file(str(path) + "/pdfs/" + name)
         time.sleep(2)
     except Warning:
-        time.sleep(10)
-        raw = parser.from_file(str(path) + "/pdfs/" + name)
         time.sleep(2)
+        raw = parser.from_file(str(path) + "/pdfs/" + name)
     try:
         text = raw['content'].encode().decode("unicode_escape", "ignore")
         return text.lower()
@@ -66,10 +71,55 @@ def get_text(DOI:str) -> str:
         return ""
 
 
+def get_text_pypdf(DOI:str) -> str:
+    """gets the text from a given DOI, will need to add in a database var soon as it will be different"""
+    hostname = socket.gethostname()
+    path = pathlib.Path(__file__).parent.absolute()
+    name = hostname + str(DOI).replace("/", "") + ".pdf"
+    fp = Path(path / "pdfs" / name)  # build filepath
+    url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
+    response = requests.get(url)
+    fp.write_bytes(response.content)  # save .pdf
+
+    fd = open(str(path) + "/pdfs/" + name, "rb")  # open with pdfreader
+    doc = PDFDocument(fd)
+    all_pages = [p for p in doc.pages()]  # get pages
+    viewer = SimplePDFViewer(fd)  # use simple viwer
+    text = ""
+    for p in range(len(all_pages)):  # for each page
+        viewer.navigate(p + 1)  # nav to page
+        try:
+            viewer.render()  # render -> clean and strip
+            text += (u"".join(viewer.canvas.strings).encode(sys.stdout.encoding, errors='replace').decode("windows-1252")) + '\n'
+        except OverflowError:
+            pass
+    fd.close()
+    return text
+
+
+def get_text_pdftotext(DOI:str) -> str:
+    """gets the text from a given DOI, will need to add in a database var soon as it will be different"""
+    hostname = socket.gethostname()
+    path = pathlib.Path(__file__).parent.absolute()
+    name = hostname + str(DOI).replace("/", "") + ".pdf"
+    fp = Path(path / "pdfs" / name)  # build filepath
+    url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
+    response = requests.get(url)
+    fp.write_bytes(response.content)  # save .pdf
+    with open("lorem_ipsum.pdf", "rb") as f:
+        pdf = pdftotext.PDF(f)
+    text = "\n\n".join(pdf)
+    f.close()
+    print(text)
+    return text
+
+
 def process_text(row) -> dict:
     """processes the pdfs and handles matches and returning data"""
+    print("-------------------------------------------------------------------------------------------------------------------")
+    print(row["title"])
     run = {}
-    text = get_text(row["DOI"])
+    text = get_text_pypdf(row["DOI"])
     hostname = socket.gethostname()
     path = pathlib.Path(__file__).parent.absolute()
     name = hostname + str(row["DOI"]).replace("/", "") + ".pdf"
@@ -81,7 +131,7 @@ def process_text(row) -> dict:
         delete_file(fp)
         pass
     # get search params TODO::make adaptable
-    search_params = {"R0": ["R0=", "R0 =", "R0", "reproductive number"]}
+    search_params = {"R0": ["R0=", "R0 =", "R0", "R0,", "reproductive number"]}
     bad_r0_keywords = ["above", "below"]
     R0_LOWER_BOUND = 0.9
     R0_UPPER_BOUND = 6.5
@@ -102,6 +152,7 @@ def process_text(row) -> dict:
                     try:
                         if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
                             if not bad_keywords(bad_r0_keywords, potential_match_string):
+                                print(potential_match_string)
                                 string_matches.append(potential_match_string)
                     except ValueError:
                         pass
@@ -117,8 +168,6 @@ def process_text(row) -> dict:
                 if f > R0_LOWER_BOUND and f < R0_UPPER_BOUND:
                     final_matches.append(f)
     if len(final_matches) > 0:
-                print("-----------------------------------------------------------------------------------------------------------------------")
-                print(row["title"])
                 final_matches = list(set(final_matches))
                 print("R0 Found", final_matches)
                 run["title"] = row["title"]
@@ -154,8 +203,10 @@ def main():
     # make the generator of dataframe
     rows = gen_rows(df)
     # start map
-    p.map(process_text, rows)
-    p.close()
+    # p.map(process_text, rows)
+    # p.close()
+    for row in rows:
+        process_text(row)
     to_df_all = []
     for f in os.listdir(Path(path / "jsons")):
         f_actual = open(Path(path / "jsons" / f))
