@@ -202,10 +202,10 @@ def main():
     # make the generator of dataframe
     rows = gen_rows(df)
     # start map
-    # p.map(process_text, rows)
-    # p.close()
-    for row in rows:
-        process_text(row)
+    p.map(process_text, rows)
+    p.close()
+    # for row in rows:
+    #     process_text(row)
     to_df_all = []
     for f in os.listdir(Path(path / "jsons")):
         f_actual = open(Path(path / "jsons" / f))
