@@ -106,7 +106,7 @@ def get_text_pdftotext(DOI:str) -> str:
     url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
     response = requests.get(url)
     fp.write_bytes(response.content)  # save .pdf
-    with open("lorem_ipsum.pdf", "rb") as f:
+    with open(fp, "rb") as f:
         pdf = pdftotext.PDF(f)
     text = "\n\n".join(pdf)
     f.close()
