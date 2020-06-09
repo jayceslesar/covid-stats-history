@@ -147,7 +147,6 @@ def process_text(row) -> dict:
             for param_type_match in re.finditer(param_type.lower(), text):
                 # grab the string plus the OFFSET (x chars after the param_type was found)
                 potential_match_string = text[param_type_match.start():param_type_match.end() + OFFSET]
-                print(potential_match_string)
                 # if param_type_match is not at the end of a sentence, grab it
                 try:
                     if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
