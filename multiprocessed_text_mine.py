@@ -168,12 +168,11 @@ def process_text(row) -> dict:
     float_finder = re.compile(r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?")
     for string_match in string_matches:
         # appends a list of floats or an empty list
-        float_matches.append(re.findall(float_finder, string_match))
-    print(float_matches)
+        float_matches.append(re.findall(float_finder, string_match)[0])
     for f in float_matches:
-        if "." in f[0]:
-            if float(f[0]) > R0_LOWER_BOUND and float(f[0]) < R0_UPPER_BOUND:
-                final_matches.append(float(f[0]))
+        if "." in f:
+            if float(f) > R0_LOWER_BOUND and float(f) < R0_UPPER_BOUND:
+                final_matches.append(float(f))
     if len(final_matches) > 0:
         print("---------------------------------------------------------------------------------")
         print(row["title"])
