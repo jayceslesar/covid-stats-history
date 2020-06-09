@@ -20,7 +20,6 @@ import pdftotext
 
 # which ones site each other
 
-
 def no_bad_keywords(keywords:list, text:str):
     for keyword in keywords:
         if keyword in text:
@@ -193,7 +192,7 @@ def main():
     if not os.path.isdir(Path(path / "jsons")):
         os.mkdir(Path(path / "jsons"))
     # read
-    df = pd.read_csv(Path(path / "rxivtest.csv"))
+    df = pd.read_csv(Path(path / "rxiv.csv"))
     # explicit spawn for unix
     multiprocessing.set_start_method("spawn")
     # use all CPU's
