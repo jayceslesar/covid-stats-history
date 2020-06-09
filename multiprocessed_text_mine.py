@@ -102,7 +102,6 @@ def process_text(row) -> dict:
                     try:
                         if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
                             if not bad_keywords(bad_r0_keywords, potential_match_string):
-                                print(potential_match_string)
                                 string_matches.append(potential_match_string)
                     except ValueError:
                         pass
