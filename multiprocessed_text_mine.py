@@ -112,7 +112,7 @@ def get_text_pdftotext(DOI:str) -> str:
         f.close()
         return text.lower()
     except Exception as e:
-        print(e)
+        print(e, DOI)
         return ""
 
 
