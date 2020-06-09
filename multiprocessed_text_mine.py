@@ -140,10 +140,10 @@ def process_text(row) -> dict:
         pass
     # get search params TODO::make adaptable
     search_params = {"R0": ["R0=", "R0 =", "R0", "R0,", "reproductive number", "average estimated reproductive number"]}
-    bad_r0_keywords = ["above", "below"]
+    bad_r0_keywords = ["above", "below", "sars-", "19"]
     R0_LOWER_BOUND = 0.9
     R0_UPPER_BOUND = 6.5
-    OFFSET = 20
+    OFFSET = 25
     string_matches = []
     float_matches = []
     final_matches = []
@@ -164,7 +164,8 @@ def process_text(row) -> dict:
                 except ValueError:
                     pass
     # strip all the flaots out
-    float_finder = re.compile(r"[-+]?\d*\.\d+|\d+")
+    # \s[-+]?\d*.\d+\s between whitespace
+    float_finder = re.compile(r"[-+]?\d*.\d+|\d+")
     for string_match in string_matches:
                 # appends a list of floats or an empty list
                 float_matches.append(re.findall(float_finder, string_match))
