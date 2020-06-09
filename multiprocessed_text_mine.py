@@ -169,6 +169,7 @@ def process_text(row) -> dict:
     for string_match in string_matches:
         # appends a list of floats or an empty list
         float_matches = re.findall(float_finder, string_match)
+        print(float_matches)
         for f in float_matches:
             if "." in str(f):
                 if f > R0_LOWER_BOUND and f < R0_UPPER_BOUND:
