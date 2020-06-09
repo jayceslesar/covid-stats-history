@@ -173,7 +173,7 @@ def process_text(row) -> dict:
         if len(float_list) > 0:
             for float_match in float_list:
                 if str(float_match) != "1":
-                    if "." in str(float_match)
+                    if "." in str(float_match):
                         f = float(float_match)
                         if f > R0_LOWER_BOUND and f < R0_UPPER_BOUND:
                             final_matches.append(f)
