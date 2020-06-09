@@ -18,7 +18,7 @@ from pdfreader import PDFDocument, SimplePDFViewer
 import pdftotext
 
 
-# which ones site each other
+# which ones cite each other
 
 def no_bad_keywords(keywords:list, text:str):
     for keyword in keywords:
@@ -48,7 +48,7 @@ def gen_rows(df):
 
 
 def get_text_tika(DOI:str) -> str:
-    """gets the text from a given DOI, will need to add in a database var soon as it will be different"""
+    """gets the text from a given DOI"""
     hostname = socket.gethostname()
     path = pathlib.Path(__file__).parent.absolute()
     name = hostname + str(DOI).replace("/", "") + ".pdf"
@@ -72,7 +72,7 @@ def get_text_tika(DOI:str) -> str:
 
 def get_text_pypdf(DOI:str) -> str:
     try:
-        """gets the text from a given DOI, will need to add in a database var soon as it will be different"""
+        """gets the text from a given DOI"""
         hostname = socket.gethostname()
         path = pathlib.Path(__file__).parent.absolute()
         name = hostname + str(DOI).replace("/", "") + ".pdf"
@@ -102,7 +102,7 @@ def get_text_pypdf(DOI:str) -> str:
 
 def get_text_pdftotext(DOI:str) -> str:
     try:
-        """gets the text from a given DOI, will need to add in a database var soon as it will be different"""
+        """gets the text from a given DOI"""
         hostname = socket.gethostname()
         path = pathlib.Path(__file__).parent.absolute()
         name = hostname + str(DOI).replace("/", "") + ".pdf"
@@ -141,6 +141,7 @@ def process_text(row) -> dict:
     # get search params TODO::make adaptable
     search_params = {"R0": ["R0=", "R0 =", "R0", "R0,", "reproductive number", "average estimated reproductive number"]}
     bad_r0_keywords = ["above", "below", "sars-", "19", "2–4", "c5"]
+    extenders = ["from", "ranged"]  # common good ones for ranges
     R0_LOWER_BOUND = 0.9
     R0_UPPER_BOUND = 6.5
     OFFSET = 25
@@ -155,23 +156,25 @@ def process_text(row) -> dict:
             for param_type_match in re.finditer(param_type.lower(), text):
                 # grab the string plus the OFFSET (x chars after the param_type was found)
                 potential_match_string = text[param_type_match.start():param_type_match.end() + OFFSET]
-                # if param_type_match is not at the end of a sentence, grab it
+                for good in extenders:
+                    if extenders in potential_match_string:
+                        potential_match_string = text[param_type_match.start():param_type_match.end() + OFFSET + 10]
                 try:
                     if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
                         if no_bad_keywords(bad_r0_keywords, potential_match_string):
                             if not bool(re.search(r'\[\d+\]', potential_match_string)):
-                                string_matches.append(potential_match_string)
+                                string_matches.append(potential_match_string.replace(u"\u2212", "-") + " ") # edge cases
                 except ValueError:
                     pass
     # strip all the flaots out
-    # \s[-+]?\d*.\d+\s between whitespace
+    # gets all floating point numbers
     float_finder = re.compile(r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?")
     for string_match in string_matches:
-    # appends a list of floats or an empty list
+    # get all the matches
         float_matches = re.findall(float_finder, string_match)
         for f in float_matches:
             if "." in str(f[0]):
-                fl = float(f[0])
+                fl = float(f[0])  # 0th index is most complete float (x.x > .x)
                 if fl > R0_LOWER_BOUND and fl < R0_UPPER_BOUND:
                     final_matches.append(fl)
     if len(final_matches) > 0:
@@ -224,7 +227,7 @@ def main():
         f_actual.close()
         os.remove(Path(path / "jsons" / f))
     # make df
-    df = pd.DataFrame(to_df_all)
+    df = pd.DataFrame(to_df_all) − -
     df.to_csv("mined.csv")
 
 
