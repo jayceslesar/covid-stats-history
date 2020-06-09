@@ -130,7 +130,7 @@ def process_text(row) -> dict:
         delete_file(fp)
         pass
     # get search params TODO::make adaptable
-    search_params = {"R0": ["R0=", "R0 =", "R0", "R0,", "reproductive number"]}
+    search_params = {"R0": ["R0=", "R0 =", "R0", "R0,", "reproductive number", "average estimated reproductive number"]}
     bad_r0_keywords = ["above", "below"]
     R0_LOWER_BOUND = 0.9
     R0_UPPER_BOUND = 6.5
@@ -147,11 +147,11 @@ def process_text(row) -> dict:
                 for param_type_match in re.finditer(param_type.lower(), text):
                     # grab the string plus the OFFSET (x chars after the param_type was found)
                     potential_match_string = text[param_type_match.start():param_type_match.end() + OFFSET]
+                    print(potential_match_string)
                     # if param_type_match is not at the end of a sentence, grab it
                     try:
                         if potential_match_string[potential_match_string.index(param_type) + len(param_type) + 1] != '.':
                             if no_bad_keywords(bad_r0_keywords, potential_match_string):
-                                print(potential_match_string)
                                 string_matches.append(potential_match_string)
                     except ValueError:
                         pass
