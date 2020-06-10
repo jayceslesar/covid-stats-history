@@ -139,6 +139,7 @@ def find_refs(row):
     most_common = Counter(all_refs).most_common(1)[0][0]
     all_refs = list(set(all_refs)).remove(most_common)
     path = pathlib.Path(__file__).parent.absolute()
+    hostname = socket.gethostname()
     name = hostname + str(row["DOI"]).replace("/", "") + ".json"
     run["title"] = row["title"]
     run["DOI"] = row["DOI"]
