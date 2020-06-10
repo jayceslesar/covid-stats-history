@@ -126,7 +126,7 @@ def get_refs(row) -> list:
     refs = extract_references_from_string(text)
     return refs
 
-
+path = pathlib.Path(__file__).parent.absolute()
 df = pd.read_csv(Path(path / "rxiv.csv"))
 rows = gen_rows(df)
 for row in rows:
