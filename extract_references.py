@@ -33,9 +33,8 @@ def get_refs_doi(DOI) -> list:
     url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
     response = requests.get(url)
     fp.write_bytes(response.content)
-    pdf = pdfx.PDFx(str(fp))
-    references_dict = pdf.get_references_as_dict()
-    return references_dict
+    refs = get_refs_file(str(fp))
+    return refs
 
 
 print(get_refs_doi("10.1101/2020.05.21.20108621"))
