@@ -12,29 +12,122 @@ import time
 from datetime import datetime
 import warnings
 import json
-from refextract import extract_references_from_file, extract_references_from_url
+from refextract import extract_references_from_file, extract_references_from_url, extract_references_from_string
 import pdfx
+import pdfreader
+from pdfreader import PDFDocument, SimplePDFViewer
+import pdftotext
+from tika import parser
 
 
 
-def get_refs_file(fp) -> list:
-    return extract_references_from_file(fp)
-
-
-def get_refs_web(url) -> list:
-    return extract_references_from_url(url)
-
-
-def get_refs_doi(DOI) -> list:
+def get_text_tika(DOI:str) -> str:
+    """gets the text from a given DOI"""
     hostname = socket.gethostname()
     path = pathlib.Path(__file__).parent.absolute()
     name = hostname + str(DOI).replace("/", "") + ".pdf"
     fp = Path(path / "pdfs" / name)  # build filepath
     url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
     response = requests.get(url)
-    fp.write_bytes(response.content)
-    refs = get_refs_file(str(fp))
+    fp.write_bytes(response.content)  # save .pdf
+    try:
+        raw = parser.from_file(str(path) + "/pdfs/" + name)
+        time.sleep(2)
+    except Warning:
+        time.sleep(2)
+        raw = parser.from_file(str(path) + "/pdfs/" + name)
+    try:
+        text = raw['content'].encode().decode("unicode_escape", "ignore")
+        return text.lower()
+    except Exception as e:
+        print(e, DOI)
+        return ""
+
+
+def get_text_pypdf(DOI:str) -> str:
+    try:
+        """gets the text from a given DOI"""
+        hostname = socket.gethostname()
+        path = pathlib.Path(__file__).parent.absolute()
+        name = hostname + str(DOI).replace("/", "") + ".pdf"
+        fp = Path(path / "pdfs" / name)  # build filepath
+        url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
+        response = requests.get(url)
+        fp.write_bytes(response.content)  # save .pdf
+
+        fd = open(str(path) + "/pdfs/" + name, "rb")  # open with pdfreader
+        doc = PDFDocument(fd)
+        all_pages = [p for p in doc.pages()]  # get pages
+        viewer = SimplePDFViewer(fd)  # use simple viwer
+        text = ""
+        for p in range(len(all_pages)):  # for each page
+            viewer.navigate(p + 1)  # nav to page
+            try:
+                viewer.render()  # render -> clean and strip
+                text += (u"".join(viewer.canvas.strings).encode(sys.stdout.encoding, errors='replace').decode("windows-1252")) + '\n'
+            except OverflowError:
+                pass
+        fd.close()
+        return text
+    except Exception as e:
+        print(e, DOI)
+        return ""
+
+
+def get_text_pdftotext(DOI:str) -> str:
+    try:
+        """gets the text from a given DOI"""
+        hostname = socket.gethostname()
+        path = pathlib.Path(__file__).parent.absolute()
+        name = hostname + str(DOI).replace("/", "") + ".pdf"
+        fp = Path(path / "pdfs" / name)  # build filepath
+        url = "https://www.medrxiv.org/content/" + str(DOI) + "v1.full.pdf"  # build url
+        response = requests.get(url)
+        fp.write_bytes(response.content)  # save .pdf
+        with open(fp, "rb") as f:
+            pdf = pdftotext.PDF(f)
+        text = "\n\n".join(pdf)
+        f.close()
+        return text.lower()
+    except Exception as e:
+        print(e, DOI)
+        return ""
+
+
+def gen_rows(df):
+    """turns a pandas dataframe into a generator of row objects"""
+    for index, row in df.iterrows():
+        d = pd.Series(row).to_dict()
+        d.pop("Unnamed: 0")  # weird key
+        yield d
+
+
+def get_refs(row) -> list:
+    try:
+        text = get_text_pdftotext(row["DOI"])
+    except Exception as e:
+        print("failed pdftotext", e)
+        pass
+    if text == "":
+        try:
+            print("attempting tika...", row["DOI"])
+            text = get_text_tika(row["DOI"])
+        except Exception as e:
+            print("failed tika", e)
+            pass
+        if text == "":
+            try:
+                print("attempting pypdf...", row["DOI"])
+                text = get_text_pypdf(row["DOI"])
+            except Exception as e:
+                prrint("unreadable", e)
+                print("unreadable", row["DOI"])
+                pass
+    refs = extract_references_from_string(text)
     return refs
 
 
-print(get_refs_doi("10.1101/2020.05.21.20108621"))
+df = pd.read_csv(Path(path / "rxiv.csv"))
+rows = gen_rows(df)
+for row in rows:
+    print(get_refs(row))
