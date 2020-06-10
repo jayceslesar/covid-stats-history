@@ -137,11 +137,14 @@ def get_refs(row) -> list:
 
 path = pathlib.Path(__file__).parent.absolute()
 df = pd.read_csv(Path(path / "rxiv.csv"))
-multiprocessing.set_start_method("spawn")
-# use all CPU's
-p = Pool(os.cpu_count())
-# make the generator of dataframe
+# multiprocessing.set_start_method("spawn")
+# # use all CPU's
+# p = Pool(os.cpu_count())
+# # make the generator of dataframe
+# rows = gen_rows(df)
+# # start map
+# p.map(get_refs, rows)
+# p.close()
 rows = gen_rows(df)
-# start map
-p.map(get_refs, rows)
-p.close()
+for row in rows:
+    print(get_refs[row])
