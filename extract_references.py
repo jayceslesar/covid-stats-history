@@ -155,7 +155,7 @@ def find_refs(row):
 
 
 path = pathlib.Path(__file__).parent.absolute()
-df = pd.read_csv(Path(path / "rxiv.csv"))
+df = pd.read_csv(Path(path / "mined.csv"))
 # multiprocessing.set_start_method("spawn")
 # use all CPU's
 p = Pool(os.cpu_count())
