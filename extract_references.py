@@ -162,10 +162,10 @@ p.map(find_refs, rows)
 p.close()
 to_df_all = []
 for f in os.listdir(Path(path / "jsons")):
-        f_actual = open(Path(path / "jsons" / f))
-        to_df_all.append(json.load(f_actual))
-        f_actual.close()
-        os.remove(Path(path / "jsons" / f))
-    # make df
-    df = pd.DataFrame(to_df_all)
-    df.to_csv("refs.csv")
+    f_actual = open(Path(path / "jsons" / f))
+    to_df_all.append(json.load(f_actual))
+    f_actual.close()
+    os.remove(Path(path / "jsons" / f))
+# make df
+df = pd.DataFrame(to_df_all)
+df.to_csv("refs.csv")
