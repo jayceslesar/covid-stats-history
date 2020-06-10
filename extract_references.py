@@ -137,8 +137,9 @@ for row in gen_rows(df):
         continue
     print("extracting refs...", row["DOI"])
     page_split = "(which was not certified by peer review) is the author/funder, who has granted medrxiv"
-    for doi_match in re.finditer("doi", text[text.index("references"):]):
+    ref_section = text[text.index("references"):]
+    for doi_match in re.finditer("doi", ref_section):
                 # grab the string plus the OFFSET (x chars after the param_type was found)
-                potential_match_string = text[doi_match.start():doi_match.end() + 20]
+                potential_match_string = ref_section[doi_match.start():doi_match.end() + 20]
                 print(potential_match_string)
     break
