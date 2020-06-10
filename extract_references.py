@@ -102,38 +102,21 @@ def gen_rows(df):
         yield d
 
 
-def get_refs(row) -> list:
+def return_text(row) -> str:
     text = ""
-    print("fetching " + row["DOI"])
-    try:
-        print("attempting pdftotext...", row["DOI"])
-        text = get_text_pdftotext(row["DOI"])
-        if text != "":
-            print("succesful pdftotext on", row["DOI"])
-    except Exception as e:
-        print("failed pdftotext", e)
-        pass
+    DOI = row["DOI"]
+    print("attempting pdftotext", DOI)
+    text = get_text_pdftotext(DOI)
     if text == "":
-        try:
-            print("attempting tika...", row["DOI"])
-            text = get_text_tika(row["DOI"])
-            if text != "":
-                print("succesful tika on", row["DOI"])
-        except Exception as e:
-            print("failed tika", e)
-            pass
+        print("attempting tika", DOI)
+        text = get_text_tika(DOI)
         if text == "":
-            try:
-                print("attempting pypdf...", row["DOI"])
-                text = get_text_pypdf(row["DOI"])
-                if text != "":
-                    print("succesful pypdf on", row["DOI"])
-            except Exception as e:
-                prrint("unreadable", e)
-                print("unreadable", row["DOI"])
-                pass
-    refs = extract_references_from_string(text, is_only_references=False)
-    return refs
+            print("attempting pypdf", DOI)
+            text = get_text_pypdf(DOI)
+            if text == "":
+                print("unreadable", DOI)
+    return text
+
 
 path = pathlib.Path(__file__).parent.absolute()
 df = pd.read_csv(Path(path / "rxiv.csv"))
@@ -146,4 +129,7 @@ df = pd.read_csv(Path(path / "rxiv.csv"))
 # p.map(get_refs, rows)
 # p.close()
 for row in gen_rows(df):
-    print(get_refs(row))
+    text = return_text(row)
+    if text == "":
+        continue
+    print(extract_references_from_string(text, is_only_references=False))
