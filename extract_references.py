@@ -18,7 +18,6 @@ import pdfreader
 from pdfreader import PDFDocument, SimplePDFViewer
 import pdftotext
 from tika import parser
-from collections import Counter
 
 
 
@@ -136,9 +135,11 @@ def find_refs(row):
         first = ref[0] + "://"
         second = "".join([link_part for link_part in ref[1:]])
         all_refs.append(first + second)
-    most_common = Counter(all_refs).most_common(1)[0][0]
-    print(list(set(all_refs)), most_common)
-    all_refs = list(set(all_refs)).remove(most_common)
+    all_refs = list(set(all_refs))
+    for ref in all_refs:
+        if str(row["DOI"]) in ref:
+            all_refs.remove(ref)
+            break
     path = pathlib.Path(__file__).parent.absolute()
     hostname = socket.gethostname()
     name = hostname + str(row["DOI"]).replace("/", "") + ".json"
@@ -148,7 +149,7 @@ def find_refs(row):
     with open(Path(path / "jsons" / name), 'w') as f:
         json.dump(run, f)
         f.close()
-    print(all_refs)
+    print(run)
     print("-------------------------------------------------------------------------------------------------------")
 
 
