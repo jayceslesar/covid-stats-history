@@ -120,7 +120,7 @@ def return_text(row) -> str:
 
 def find_refs(row):
     reg = re.compile(r"(http|ftp|https|doi)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?")
-    dois = []
+    all_refs = []
     text = return_text(row)
     if text == "":
         return None
