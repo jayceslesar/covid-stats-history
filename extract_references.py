@@ -133,6 +133,7 @@ df = pd.read_csv(Path(path / "rxiv.csv"))
 reg = re.compile(r"(http|ftp|https|doi)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?")
 count = 0
 for row in gen_rows(df):
+    all_refs = []
     if count == 5:
         break
     dois = []
@@ -140,13 +141,14 @@ for row in gen_rows(df):
     if text == "":
         continue
     print("extracting refs...", row["DOI"])
-    ref_section = text[text.index("references"):]
     try:
+        ref_section = text[text.index("references"):]
         refs = re.findall(reg, ref_section)
     except ValueError:
         refs = re.findall(reg, text)
     for ref in refs:
         first = ref[0] + "://"
         second = "".join([link_part for link_part in ref[1:]])
-        print(first + second)
-    count += 1
+        all_refs.append(first + second)
+    print(all_refs)
+    print("-------------------------------------------------------------------------------------------------------")
