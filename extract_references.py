@@ -103,9 +103,13 @@ def gen_rows(df):
 
 
 def get_refs(row) -> list:
+    text = ""
     print("fetching " + row["DOI"])
     try:
+        print("attempting pdftotext...", row["DOI"])
         text = get_text_pdftotext(row["DOI"])
+        if text != "":
+            print("succesful pdftotext on", row["DOI"])
     except Exception as e:
         print("failed pdftotext", e)
         pass
@@ -113,6 +117,8 @@ def get_refs(row) -> list:
         try:
             print("attempting tika...", row["DOI"])
             text = get_text_tika(row["DOI"])
+            if text != "":
+            print("succesful tika on", row["DOI"])
         except Exception as e:
             print("failed tika", e)
             pass
@@ -120,15 +126,22 @@ def get_refs(row) -> list:
             try:
                 print("attempting pypdf...", row["DOI"])
                 text = get_text_pypdf(row["DOI"])
+                if text != "":
+            print("succesful pypdf on", row["DOI"])
             except Exception as e:
                 prrint("unreadable", e)
                 print("unreadable", row["DOI"])
                 pass
-    refs = extract_references_from_string(text)
+    refs = extract_references_from_string(text, is_only_references=False)
     return refs
 
 path = pathlib.Path(__file__).parent.absolute()
 df = pd.read_csv(Path(path / "rxiv.csv"))
+multiprocessing.set_start_method("spawn")
+# use all CPU's
+p = Pool(os.cpu_count())
+# make the generator of dataframe
 rows = gen_rows(df)
-for row in rows:
-    print(get_refs(row))
+# start map
+p.map(get_refs, rows)
+p.close()
