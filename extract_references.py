@@ -145,6 +145,5 @@ df = pd.read_csv(Path(path / "rxiv.csv"))
 # # start map
 # p.map(get_refs, rows)
 # p.close()
-rows = gen_rows(df)
-for row in rows:
+for index, row in df.iterrows():
     print(get_refs[row])
