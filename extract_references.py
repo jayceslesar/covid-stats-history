@@ -130,6 +130,7 @@ df = pd.read_csv(Path(path / "rxiv.csv"))
 # p.close()
 
 
+reg = re.compile(r"(http|ftp|https|doi)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?")
 count = 0
 for row in gen_rows(df):
     if count == 5:
@@ -141,9 +142,10 @@ for row in gen_rows(df):
     print("extracting refs...", row["DOI"])
     page_split = "(which was not certified by peer review) is the author/funder, who has granted medrxiv"
     ref_section = text[text.index("references"):]
-    for doi_match in re.finditer("doi", ref_section):
-                # grab the string plus the OFFSET (x chars after the param_type was found)
-                doi_unclean = ref_section[doi_match.start():doi_match.end() + 35]
-                dois.append(doi_unclean)
-    print(dois)
+    print(re.findall(reg, ref_section))
+    # for doi_match in re.finditer(reg, ref_section):
+    #             # grab the string plus the OFFSET (x chars after the param_type was found)
+    #             doi_unclean = ref_section[doi_match.start():doi_match.end() + 35]
+    #             dois.append(doi_unclean.replace("\n", ""))
+    # print(dois)
     count += 1
