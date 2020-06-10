@@ -130,8 +130,11 @@ df = pd.read_csv(Path(path / "rxiv.csv"))
 # p.close()
 
 
-
+count = 0
 for row in gen_rows(df):
+    if count == 5:
+        break
+    dois = []
     text = return_text(row)
     if text == "":
         continue
@@ -140,6 +143,7 @@ for row in gen_rows(df):
     ref_section = text[text.index("references"):]
     for doi_match in re.finditer("doi", ref_section):
                 # grab the string plus the OFFSET (x chars after the param_type was found)
-                potential_match_string = ref_section[doi_match.start():doi_match.end() + 20]
-                print(potential_match_string)
-    break
+                doi_unclean = ref_section[doi_match.start():doi_match.end() + 35]
+                dois.append(doi_unclean)
+    print(dois)
+    count += 1
