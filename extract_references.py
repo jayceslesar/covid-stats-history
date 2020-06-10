@@ -128,9 +128,13 @@ df = pd.read_csv(Path(path / "rxiv.csv"))
 # # start map
 # p.map(get_refs, rows)
 # p.close()
+
+
+
 for row in gen_rows(df):
     text = return_text(row)
     if text == "":
         continue
     print("extracting refs...", row["DOI"])
-    print(text[text.index("references"):])
+    page_split = r"medrxiv preprint doi: https://doi.org/" + row["DOI"] + ".this version posted may 26, 2020. the copyright holder for this preprint (which was not certified by peer review) is the author/funder, who has granted medrxiv a license to display the preprint in perpetuity. it is made available under a cc-by-nc 4.0 international license ."
+    print(text[text.index("references"):].split(page_split))
