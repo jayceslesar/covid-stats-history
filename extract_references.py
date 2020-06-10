@@ -155,7 +155,7 @@ def find_refs(row):
 
 
 path = pathlib.Path(__file__).parent.absolute()
-df = pd.read_csv(Path(path / "mined.csv"))
+df = pd.read_csv(Path(path / "r0test.csv"))
 # multiprocessing.set_start_method("spawn")
 # use all CPU's
 p = Pool(os.cpu_count())
@@ -173,4 +173,4 @@ for f in os.listdir(Path(path / "jsons")):
     os.remove(Path(path / "jsons" / f))
 # make df
 df = pd.DataFrame(to_df_all)
-df.to_csv("r0+refs.csv")
+df.to_csv("r0test_refs.csv")
