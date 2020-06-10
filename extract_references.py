@@ -127,7 +127,7 @@ def get_refs(row) -> list:
                 print("attempting pypdf...", row["DOI"])
                 text = get_text_pypdf(row["DOI"])
                 if text != "":
-            print("succesful pypdf on", row["DOI"])
+                    print("succesful pypdf on", row["DOI"])
             except Exception as e:
                 prrint("unreadable", e)
                 print("unreadable", row["DOI"])
