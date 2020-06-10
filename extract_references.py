@@ -140,17 +140,18 @@ def find_refs(row):
         if str(row["DOI"]) in ref:
             all_refs.remove(ref)
             break
-    path = pathlib.Path(__file__).parent.absolute()
-    hostname = socket.gethostname()
-    name = hostname + str(row["DOI"]).replace("/", "") + ".json"
-    run["title"] = row["title"]
-    run["DOI"] = row["DOI"]
-    run["refs"] = all_refs
-    with open(Path(path / "jsons" / name), 'w') as f:
-        json.dump(run, f)
-        f.close()
-    print(run)
-    print("-------------------------------------------------------------------------------------------------------")
+    if len(all_refs) > 0:
+        path = pathlib.Path(__file__).parent.absolute()
+        hostname = socket.gethostname()
+        name = hostname + str(row["DOI"]).replace("/", "") + ".json"
+        run["title"] = row["title"]
+        run["DOI"] = row["DOI"]
+        run["refs"] = all_refs
+        with open(Path(path / "jsons" / name), 'w') as f:
+            json.dump(run, f)
+            f.close()
+        print(run)
+        print("-------------------------------------------------------------------------------------------------------")
 
 
 path = pathlib.Path(__file__).parent.absolute()
