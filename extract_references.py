@@ -132,5 +132,5 @@ for row in gen_rows(df):
     text = return_text(row)
     if text == "":
         continue
-    print("extracting refs..." row["DOI"])
+    print("extracting refs...", row["DOI"])
     print(extract_references_from_string(text, is_only_references=False))
