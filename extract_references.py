@@ -137,5 +137,5 @@ for row in gen_rows(df):
         continue
     print("extracting refs...", row["DOI"])
     page_split = "(which was not certified by peer review) is the author/funder, who has granted medrxiv"
-    print(re.findall(r"/(?<=doi:)(.*)(?=[\n\r])", text[text.index("references"):]))
+    print(re.findall(r"/(?<=doi:)(.*)(?=[\n])", text[text.index("references"):]))
     break
