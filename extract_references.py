@@ -118,7 +118,7 @@ def get_refs(row) -> list:
             print("attempting tika...", row["DOI"])
             text = get_text_tika(row["DOI"])
             if text != "":
-            print("succesful tika on", row["DOI"])
+                print("succesful tika on", row["DOI"])
         except Exception as e:
             print("failed tika", e)
             pass
