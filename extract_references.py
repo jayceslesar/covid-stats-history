@@ -118,7 +118,7 @@ def return_text(row) -> str:
     return text
 
 
-def find_refs(row:)
+def find_refs(row):
     reg = re.compile(r"(http|ftp|https|doi)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?")
     dois = []
     text = return_text(row)
