@@ -123,11 +123,26 @@ def get_text_pdftotext(DOI:str) -> str:
 def process_text(row) -> dict:
     """processes the pdfs and handles matches and returning data"""
     run = {}
-    text = get_text_pdftotext(row["DOI"])
+    try:
+        text = get_text_pdftotext(row["DOI"])
+    except Exception as e:
+        print("failed pdftotext", e)
+        pass
     if text == "":
-        text = get_text_tika(row["DOI"])
+        try:
+            print("attempting tika...", row["DOI"])
+            text = get_text_tika(row["DOI"])
+        except Exception as e:
+            print("failed tika", e)
+            pass
         if text == "":
-            text = get_text_pypdf(row["DOI"])
+            try:
+                print("attempting pypdf...", row["DOI"])
+                text = get_text_pypdf(row["DOI"])
+            except Exception as e:
+                prrint("unreadable", e)
+                print("unreadable", row["DOI"])
+                pass
     hostname = socket.gethostname()
     path = pathlib.Path(__file__).parent.absolute()
     name = hostname + str(row["DOI"]).replace("/", "") + ".pdf"
@@ -141,7 +156,7 @@ def process_text(row) -> dict:
     # get search params TODO::make adaptable
     search_params = {"R0": ["R0=", "R0 =", "R0", "R0,", "reproductive number", "average estimated reproductive number"]}
     bad_r0_keywords = ["above", "below", "sars-", "19", "2–4", "c5"]
-    extenders = ["from", "ranged"]  # common good ones for ranges
+    extenders = ["from", "ranged", "ci"]  # common good ones for ranges
     R0_LOWER_BOUND = 0.9
     R0_UPPER_BOUND = 6.5
     OFFSET = 25
