@@ -118,24 +118,8 @@ def return_text(row) -> str:
     return text
 
 
-path = pathlib.Path(__file__).parent.absolute()
-df = pd.read_csv(Path(path / "rxiv.csv"))
-# multiprocessing.set_start_method("spawn")
-# # use all CPU's
-# p = Pool(os.cpu_count())
-# # make the generator of dataframe
-# rows = gen_rows(df)
-# # start map
-# p.map(get_refs, rows)
-# p.close()
-
-
-reg = re.compile(r"(http|ftp|https|doi)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?")
-count = 0
-for row in gen_rows(df):
-    all_refs = []
-    if count == 5:
-        break
+def find_refs(row:)
+    reg = re.compile(r"(http|ftp|https|doi)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?")
     dois = []
     text = return_text(row)
     if text == "":
@@ -152,3 +136,15 @@ for row in gen_rows(df):
         all_refs.append(first + second)
     print(all_refs)
     print("-------------------------------------------------------------------------------------------------------")
+
+
+path = pathlib.Path(__file__).parent.absolute()
+df = pd.read_csv(Path(path / "rxiv.csv"))
+multiprocessing.set_start_method("spawn")
+# use all CPU's
+p = Pool(os.cpu_count())
+# make the generator of dataframe
+rows = gen_rows(df)
+# start map
+p.map(find_refs, rows)
+p.close()
