@@ -123,7 +123,7 @@ def find_refs(row):
     dois = []
     text = return_text(row)
     if text == "":
-        continue
+        return None
     print("extracting refs...", row["DOI"])
     try:
         ref_section = text[text.index("references"):]
