@@ -133,4 +133,4 @@ for row in gen_rows(df):
     if text == "":
         continue
     print("extracting refs...", row["DOI"])
-    print(extract_references_from_string(text, is_only_references=False))
+    print(text[text.index("references"):])
