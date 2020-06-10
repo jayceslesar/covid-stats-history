@@ -140,12 +140,13 @@ for row in gen_rows(df):
     if text == "":
         continue
     print("extracting refs...", row["DOI"])
-    page_split = "(which was not certified by peer review) is the author/funder, who has granted medrxiv"
     ref_section = text[text.index("references"):]
-    print(re.findall(reg, ref_section))
-    # for doi_match in re.finditer(reg, ref_section):
-    #             # grab the string plus the OFFSET (x chars after the param_type was found)
-    #             doi_unclean = ref_section[doi_match.start():doi_match.end() + 35]
-    #             dois.append(doi_unclean.replace("\n", ""))
-    # print(dois)
+    try:
+        refs = re.findall(reg, ref_section)
+    except ValueError:
+        refs = re.findall(reg, text)
+    for ref in refs:
+        first = ref[0] + "://"
+        second = "".join([link_part for link_part in ref[1:]])
+        print(first + second)
     count += 1
