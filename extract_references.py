@@ -18,6 +18,7 @@ import pdfreader
 from pdfreader import PDFDocument, SimplePDFViewer
 import pdftotext
 from tika import parser
+from collections import Counter
 
 
 
@@ -119,6 +120,7 @@ def return_text(row) -> str:
 
 
 def find_refs(row):
+    run = {}
     reg = re.compile(r"(http|ftp|https|doi)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?")
     all_refs = []
     text = return_text(row)
@@ -134,6 +136,16 @@ def find_refs(row):
         first = ref[0] + "://"
         second = "".join([link_part for link_part in ref[1:]])
         all_refs.append(first + second)
+    most_common = Counter(all_refs).most_common(1)[0][0]
+    all_refs = list(set(all_refs)).remove(most_common)
+    path = pathlib.Path(__file__).parent.absolute()
+    name = hostname + str(row["DOI"]).replace("/", "") + ".json"
+    run["title"] = row["title"]
+    run["DOI"] = row["DOI"]
+    run["refs"] = all_refs
+    with open(Path(path / "jsons" / name), 'w') as f:
+        json.dump(run, f)
+        f.close()
     print(all_refs)
     print("-------------------------------------------------------------------------------------------------------")
 
@@ -148,3 +160,12 @@ rows = gen_rows(df)
 # start map
 p.map(find_refs, rows)
 p.close()
+to_df_all = []
+for f in os.listdir(Path(path / "jsons")):
+        f_actual = open(Path(path / "jsons" / f))
+        to_df_all.append(json.load(f_actual))
+        f_actual.close()
+        os.remove(Path(path / "jsons" / f))
+    # make df
+    df = pd.DataFrame(to_df_all)
+    df.to_csv("refs.csv")
