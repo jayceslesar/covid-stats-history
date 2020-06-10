@@ -165,6 +165,7 @@ rows = gen_rows(df)
 p.map(find_refs, rows)
 p.close()
 to_df_all = []
+print("creating df...")
 for f in os.listdir(Path(path / "jsons")):
     f_actual = open(Path(path / "jsons" / f))
     to_df_all.append(json.load(f_actual))
@@ -172,4 +173,4 @@ for f in os.listdir(Path(path / "jsons")):
     os.remove(Path(path / "jsons" / f))
 # make df
 df = pd.DataFrame(to_df_all)
-df.to_csv("refs.csv")
+df.to_csv("r0+refs.csv")
