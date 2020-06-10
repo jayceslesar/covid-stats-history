@@ -103,6 +103,7 @@ def gen_rows(df):
 
 
 def get_refs(row) -> list:
+    print("fetching " + row["DOI"])
     try:
         text = get_text_pdftotext(row["DOI"])
     except Exception as e:
