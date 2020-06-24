@@ -19,7 +19,6 @@ def check_paper(row):
     references = []
     text = return_text(str(row["DOI"]))
     if text != "":
-        return
         for title in titles:
             if title in text:
                 references.append(title)
