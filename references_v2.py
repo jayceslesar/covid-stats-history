@@ -25,9 +25,12 @@ def check_paper(row):
                 references.append(title)
         if len(references) > 0:
             to_file = {row["title"]: references}
+            print(to_file)
             with open(Path(path / "jsons" / name), 'w') as f:
                 json.dump(to_file, f)
                 f.close()
+        else:
+            print("no refs found")
 
 
 p = Pool(os.cpu_count())
