@@ -119,7 +119,7 @@ def check_paper(row):
     hostname = socket.gethostname()
     name = hostname + str(row["DOI"]).replace("/", "") + ".json"
     references = []
-    text = return_text(str(row["DOI"]))
+    text = return_text(row)
     if text != "":
         for title in titles:
             if title in text:
