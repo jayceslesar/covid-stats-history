@@ -109,7 +109,7 @@ def return_text(row) -> str:
 
 path = pathlib.Path(__file__).parent.absolute()
 print("reading df...")
-df = pd.read_csv(Path(path / "all_rxiv.csv"))
+df = pd.read_csv(Path(path / "rxiv.csv"))
 print("reading df done!")
 titles = df["title"].to_list()
 
