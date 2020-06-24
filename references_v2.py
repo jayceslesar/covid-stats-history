@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import pathlib
 from pathlib import Path
 import multiprocessing
 from multiprocessing import Pool
