@@ -11,6 +11,7 @@ import pdfreader
 from pdfreader import PDFDocument, SimplePDFViewer
 import pdftotext
 import os
+import time
 
 def get_text_tika(DOI:str) -> str:
     """gets the text from a given DOI"""
