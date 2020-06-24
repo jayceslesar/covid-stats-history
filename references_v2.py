@@ -32,12 +32,16 @@ def check_paper(row):
         else:
             print("no refs found")
 
-
+print("starting pool")
 p = Pool(os.cpu_count())
+print("generating rows...")
 rows = gen_rows(df)
+print("rows generated!")
+print("starting map....")
 p.map(check_paper, rows)
 p.close()
 
+print("joining files...")
 adjacency = []
 for f in os.listdir(Path(path / "jsons")):
     f_actual = open(Path(path / "jsons" / f))
@@ -49,6 +53,8 @@ with open('refs.txt', 'w') as f:
     for item in adjacency:
         f.write("%s\n" % item)
     f.close()
+print("done!")
+print(adjacency)
 
 
 
