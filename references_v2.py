@@ -15,6 +15,7 @@ titles = df["title"].to_list()
 
 def check_paper(row):
     hostname = socket.gethostname()
+    print(hostname + " working on " + str(row["title"]))
     name = hostname + str(row["DOI"]).replace("/", "") + ".json"
     references = []
     text = return_text(str(row["DOI"]))
