@@ -147,12 +147,12 @@ path = pathlib.Path(__file__).parent.absolute()
 print("joining files...")
 adjacency = []
 for f in os.listdir(Path(path / "jsons")):
-    f_actual = open(Path(path / "jsons" / f))
-    data = json.loads(f_actual)
-    print(data)
-    adjacency.append(data)
-    f_actual.close()
-    os.remove(Path(path / "jsons" / f))
+    with open(Path(path / "jsons" / f)) as f_actual:
+        data = json.loads(f_actual)[0]
+        print(data)
+        adjacency.append(data)
+        f_actual.close()
+        os.remove(Path(path / "jsons" / f))
 
 with open('refs.txt', 'w') as f:
     for item in adjacency:
