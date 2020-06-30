@@ -60,7 +60,7 @@ def get_text_pypdf(DOI:str) -> str:
             except OverflowError:
                 pass
         fd.close()
-        return text
+        return text.lower()
     except Exception as e:
         print(e, DOI)
         return ""
@@ -121,11 +121,9 @@ def check_paper(row):
     name = hostname + str(row["DOI"]).replace("/", "") + ".json"
     references = []
     text = return_text(row)
-    text = text[text.index("references"):]
     if text != "":
-        print(text)
         for title in titles:
-            if title in text:
+            if title.lower() in text:
                 print("reference found")
                 references.append(title)
         if len(references) > 0:
