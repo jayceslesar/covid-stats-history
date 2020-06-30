@@ -110,7 +110,7 @@ import json
 #                 print("unreadable", DOI)
 #     return text
 
-# path = pathlib.Path(__file__).parent.absolute()
+path = pathlib.Path(__file__).parent.absolute()
 # print("reading df...")
 # df = pd.read_csv(Path(path / "rxiv.csv"))
 # print("reading df done!")
