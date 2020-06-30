@@ -12,6 +12,7 @@ from pdfreader import PDFDocument, SimplePDFViewer
 import pdftotext
 import os
 import time
+import json
 
 def get_text_tika(DOI:str) -> str:
     """gets the text from a given DOI"""
@@ -120,12 +121,14 @@ def check_paper(row):
     hostname = socket.gethostname()
     name = hostname + str(row["DOI"]).replace("/", "") + ".json"
     references = []
+    curr_title = row["title"].lower()
     text = return_text(row)
     if text != "":
         for title in titles:
-            if title.lower() in text:
-                print("reference found")
-                references.append(title)
+            if title.lower() != curr_title:
+                if title.lower() in text:
+                    print("reference found")
+                    references.append(title)
         if len(references) > 0:
             to_file = {row["title"]: references}
             with open(Path(path / "jsons" / name), 'w') as f:
