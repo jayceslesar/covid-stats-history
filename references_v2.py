@@ -148,7 +148,7 @@ print("joining files...")
 adjacency = []
 for f in os.listdir(Path(path / "jsons")):
     f_actual = open(Path(path / "jsons" / f))
-    data = json.loads(f_actual.read())
+    data = json.loads(f_actual)
     print(data)
     adjacency.append(data)
     f_actual.close()
