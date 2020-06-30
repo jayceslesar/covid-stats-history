@@ -121,7 +121,9 @@ def check_paper(row):
     name = hostname + str(row["DOI"]).replace("/", "") + ".json"
     references = []
     text = return_text(row)
+    text = text[text.index("references"):]
     if text != "":
+        print(text)
         for title in titles:
             if title in text:
                 print("reference found")
