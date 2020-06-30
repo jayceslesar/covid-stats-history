@@ -124,15 +124,13 @@ def check_paper(row):
     if text != "":
         for title in titles:
             if title in text:
+                print("reference found")
                 references.append(title)
         if len(references) > 0:
             to_file = {row["title"]: references}
-            print(to_file)
             with open(Path(path / "jsons" / name), 'w') as f:
                 json.dump(to_file, f)
                 f.close()
-        else:
-            print("no refs found")
 
 print("starting pool")
 p = Pool(os.cpu_count())
@@ -157,8 +155,3 @@ with open('refs.txt', 'w') as f:
     f.close()
 print("done!")
 print(adjacency)
-
-
-
-
-
