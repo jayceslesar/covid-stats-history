@@ -91,7 +91,10 @@ def gen_rows(df):
     """turns a pandas dataframe into a generator of row objects"""
     for index, row in df.iterrows():
         d = pd.Series(row).to_dict()
-        d.pop("Unnamed: 0")  # weird key
+        try:
+            d.pop("Unnamed: 0")  # weird key
+        except :
+            pass
         yield d
 
 
