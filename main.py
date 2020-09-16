@@ -1,3 +1,9 @@
+"""
+Jayce Slesar
+9/16/2020
+Calls the Article_Sweep script in combination with keywords
+"""
+
 import Article_Sweep
 from collections import Counter
 
@@ -39,7 +45,6 @@ def main():
                     'expression',
                     'PROMOTOR',
                     'capacity',
-                    # 'detection',
                     'ecological',
                     'cell',
                     'vaccine',
@@ -50,7 +55,6 @@ def main():
                     'administered',
                     'risk factor',
                     'cross-sectional',
-                    # 'diagnosis',
                     'Chest',
                     'Retroviruses',
                     'replication',
@@ -124,7 +128,6 @@ def main():
                     'Commentary',
                     'Guide',
                     'healthcare',
-                    # 'Non-Pharmaceutical',
                     'neuro',
                     'brain',
                     'viral',
@@ -138,10 +141,6 @@ def main():
     # TODO::implement some sort of smart database
     titles = Article_Sweep.Article_Sweep(good_keywords, bad_keywords, auto_params, manual_params)
     
-    
-    # words = Counter(titles.words.split()).most_common()
-    # problems = [word for word in words if '�' not in word[0] if word[1] > 2]
-    # print(problems)
 
 if __name__ == "__main__":
     main()
