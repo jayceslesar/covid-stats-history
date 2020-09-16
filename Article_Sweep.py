@@ -1,3 +1,9 @@
+"""
+Jayce Slesar
+9/16/2020
+Functions and a Class to collect, clean, and organize a datapull from rxiv
+"""
+
 import json
 import re
 import requests
